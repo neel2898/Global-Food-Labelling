@@ -1065,7 +1065,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid #7FA2E6;outline-offset
         <section aria-label="{{s.title}}" style="background: #FFFFFF; border: 1px solid #D3DDEC; border-radius: 8px; padding: 18px 22px 22px; display: flex; flex-direction: column; gap: 18px">
           <h3 style="margin: 0; font-size: 18px; font-weight: 600">{{s.title}}</h3>
           <sc-for list="{{s.groups}}" as="g" hint-placeholder-count="2">
-            <div style="display: flex; flex-direction: column; gap: 14px">
+            <div style="{{g.wrapStyle}}">
+              <sc-if value="{{g.isAcc}}" hint-placeholder-val="{{false}}">
+                <button type="button" onClick="{{g.accToggle}}" aria-expanded="{{g.accOpenStr}}" style="display: flex; align-items: center; gap: 12px; width: 100%; padding: 13px 16px; border: none; background: none; cursor: pointer; text-align: left"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3A4458" stroke-width="2.4" style="{{g.chevStyle}}" stroke-linecap="round" stroke-linejoin="round"><path d="M19.92 8.95l-6.52 6.52c-.77.77-2.03.77-2.8 0L4.08 8.95"></path></svg><span style="font-size: 15px; font-weight: 600; color: #1B2230">{{g.accTitle}}</span><span style="margin-left: auto; font-size: 12.5px; font-weight: 600; color: {{g.countColor}}">{{g.accCount}}</span></button>
+              </sc-if>
+              <sc-if value="{{g.bodyOpen}}" hint-placeholder-val="{{true}}">
+              <div style="{{g.bodyStyle}}">
               <sc-if value="{{g.hasHead}}" hint-placeholder-val="{{true}}">
                 <div style="display: flex; align-items: center; gap: 14px; padding-bottom: 10px; border-bottom: 1px solid #EEF2F7">
                   <div style="font-size: 15px; font-weight: 600">{{g.head}}</div>
@@ -1235,11 +1240,13 @@ input:focus,select:focus,textarea:focus{outline:2px solid #7FA2E6;outline-offset
                 </sc-for>
               </div>
               </sc-if>
+              </div>
+              </sc-if>
             </div>
           </sc-for>
         </section>
       </sc-for>
-    
+
 </template>
 <template id="tpl-Nutrition">
 
@@ -2457,7 +2464,7 @@ class Component extends DCLogic {
       chk: {},
       vals: { 'US-p65chem': 'Acrylamide', 'US-p65head': 'WARNING:' },
       defs: { p65head: 'WARNING:', fortUnit: 'mg' }, ask: null,
-      fort: ['f0'], fortOpen: {}
+      fort: ['f0'], fortOpen: {}, decOpen: {}
     };
   }
 
@@ -2596,14 +2603,16 @@ class Component extends DCLogic {
       this.setState({ ov: v === mAns(id) ? drop(st.ov, k) : Object.assign({}, st.ov, { [k]: v }) });
     };
     const commonQ = (id, label, extra) => {
-      if (isMaster) {
-        return Q(Object.assign({ key: id, label, opts: yesNo(mAns(id), (v) => setMaster(id, v)) }, extra || {}));
-      }
-      return Q(Object.assign({ key: id, label, opts: yesNo(cAns(id), (v) => setCountry(id, v)) }, extra || {}, { mks: null }));
+      const cur = isMaster ? mAns(id) : cAns(id);
+      const cell = isMaster
+        ? Q(Object.assign({ key: id, label, opts: yesNo(mAns(id), (v) => setMaster(id, v)) }, extra || {}))
+        : Q(Object.assign({ key: id, label, opts: yesNo(cAns(id), (v) => setCountry(id, v)) }, extra || {}, { mks: null }));
+      cell.decId = id; cell.yesFlag = cur === 'yes';
+      return cell;
     };
     // Market-only questions
     const qv = (id, d) => (st.cq[tab + '-' + id] || d || 'no');
-    const localQ = (id, label, extra) => Q(Object.assign({ key: id, label, opts: yesNo(qv(id), (v) => set('cq', { [tab + '-' + id]: v })) }, extra || {}));
+    const localQ = (id, label, extra) => { const cell = Q(Object.assign({ key: id, label, opts: yesNo(qv(id), (v) => set('cq', { [tab + '-' + id]: v })) }, extra || {})); cell.decId = id; cell.yesFlag = qv(id) === 'yes'; return cell; };
 
     // ---------- Mandatory declarations
     // Triggered (follow-up) fields sit right under their question, indented.
@@ -2634,15 +2643,44 @@ class Component extends DCLogic {
       return rows;
     };
     const grid3 = 'display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 32px; row-gap: 22px';
-    const contains = [];
+    // Group the long declaration lists into collapsible category accordions, so
+    // the screen shows a few headers instead of the whole regulatory catalogue.
+    // A category auto-opens when something in it is declared; the user can still
+    // toggle any category, and that choice is remembered per category.
+    const decOpen = st.decOpen || {};
+    const catChev = (open) => 'flex-shrink: 0; transition: transform .15s ease; transform: rotate(' + (open ? '0deg' : '-90deg') + ')';
+    const accGroup = (cid, title, cells) => {
+      const declared = cells.filter((c) => c.yesFlag).length;
+      const total = cells.filter((c) => c.decId).length || cells.length;
+      const open = decOpen[cid] !== undefined ? decOpen[cid] : declared > 0;
+      return {
+        isAcc: true, accTitle: title,
+        accCount: declared > 0 ? declared + ' of ' + total + ' declared' : total + ' items · none declared',
+        countColor: declared > 0 ? '#1D5FD0' : '#8A93A6',
+        accOpen: open, accOpenStr: open ? 'true' : 'false', bodyOpen: open,
+        chevStyle: catChev(open),
+        accToggle: () => set('decOpen', { [cid]: !open }),
+        wrapStyle: 'display: flex; flex-direction: column; border: 1px solid #E3E9F2; border-radius: 10px; overflow: hidden; background: #FCFDFE',
+        bodyStyle: 'display: flex; flex-direction: column; gap: 14px; padding: 2px 16px 18px',
+        hasHead: false, head: '', hasAi: false, aiText: '',
+        hasCells: true, gridStyle: grid3, cells: cells, rows: toRows(cells)
+      };
+    };
+    const plainGroup = (obj) => Object.assign({ isAcc: false, bodyOpen: true, accTitle: '', accCount: '', accOpenStr: 'false', countColor: '#8A93A6', chevStyle: '', accToggle: null, wrapStyle: 'display: flex; flex-direction: column; gap: 14px', bodyStyle: 'display: flex; flex-direction: column; gap: 14px' }, obj);
+    const DECCAT = { asp: 'sweet', ace: 'sweet', aas: 'sweet', sac: 'sweet', suc: 'sweet', neo: 'sweet', ste: 'sweet', tha: 'sweet', ery: 'poly', iso: 'poly', pdx: 'poly', pol: 'poly', sor: 'poly', tre: 'poly', pse: 'sterol', pst: 'sterol', ann: 'other', caf: 'other', fib: 'other', msg: 'other', gel: 'other' };
+    const DECCATMETA = [['sweet', 'Sweeteners'], ['poly', 'Polyols & sugar alcohols'], ['sterol', 'Plant stanols & sterols'], ['other', 'Other additives & constituents']];
+    const catCells = {};
     D.S.filter((x) => isMaster ? x.mk.some(inCO) : x.mk.indexOf(tab) >= 0).forEach((x) => {
-      contains.push(commonQ(x.id, x.n, { mks: isMaster ? x.mk.filter(inCO) : null, info: x.info }));
+      const cat = DECCAT[x.id] || 'other';
+      const arr = (catCells[cat] = catCells[cat] || []);
+      arr.push(commonQ(x.id, x.n, { mks: isMaster ? x.mk.filter(inCO) : null, info: x.info }));
       if (!x.det) return;
-      if (!isMaster && cAns(x.id) === 'yes' && x.det[tab]) attach(contains, [F(x.id, x.det[tab].map((l) => ({ l })))], x.n);
+      if (!isMaster && cAns(x.id) === 'yes' && x.det[tab]) attach(arr, [F(x.id, x.det[tab].map((l) => ({ l })))], x.n);
       // Master: show follow-ups for the selected markets; prefix the market when it spans several
-      if (isMaster && mAns(x.id) === 'yes') attach(contains, Object.keys(x.det).filter(inCO).map((m) => F(x.id + m, x.det[m].map((l) => ({ l: (x.mk.filter(inCO).length > 1 ? names[m] + ': ' : '') + l })))), x.n);
+      if (isMaster && mAns(x.id) === 'yes') attach(arr, Object.keys(x.det).filter(inCO).map((m) => F(x.id + m, x.det[m].map((l) => ({ l: (x.mk.filter(inCO).length > 1 ? names[m] + ': ' : '') + l })))), x.n);
     });
-    const declGroups = [{ hasHead: true, head: 'Does your product contain any of the following?', hasAi: false, aiText: '', hasCells: true, gridStyle: grid3, cells: contains, rows: toRows(contains) }];
+    const declGroups = [];
+    DECCATMETA.forEach(([cid, label]) => { const cells = catCells[cid]; if (cells && cells.length) declGroups.push(accGroup('dec-' + cid, label, cells)); });
     if (!isMaster) {
       const one = [];
       (D.ONE[tab] || []).forEach((q) => {
@@ -2661,7 +2699,7 @@ class Component extends DCLogic {
         }
         attach(one, t, q.short || q.n);
       });
-      declGroups.push({ hasHead: true, head: 'Is your product one of the following?', hasAi: false, aiText: '', hasCells: true, gridStyle: grid3, cells: one, rows: toRows(one) });
+      if (one.length) declGroups.push(accGroup('dec-one', 'Product-type declarations', one));
     }
 
     // ---------- Certifications
@@ -2734,8 +2772,7 @@ class Component extends DCLogic {
       cert.push(commonQ('org', 'Is your product organic? *', { mks: isMaster ? CO.slice() : null }));
       orgDetails();
     }
-    const certGroups = [{ hasHead: false, head: '', hasAi: false, aiText: '', hasCells: true,
-      gridStyle: 'display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 32px; row-gap: 22px', cells: cert, rows: toRows(cert) }];
+    const certGroups = [accGroup('cert', 'Certifications', cert)];
 
     const suffix = isMaster ? '' : ' - ' + names[tab];
     const sections = [
