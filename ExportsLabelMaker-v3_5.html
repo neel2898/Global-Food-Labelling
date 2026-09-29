@@ -1201,6 +1201,30 @@ input:focus,select:focus,textarea:focus{outline:2px solid #7FA2E6;outline-offset
                               <sc-if value="{{d.isAdd}}" hint-placeholder-val="{{false}}">
                                 <button type="button" onClick="{{d.add}}" style="align-self: flex-start; height: 28px; padding: 0; border: none; background: none; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: #2F80ED"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>{{d.addLabel}}</button>
                               </sc-if>
+                              <sc-if value="{{d.isAcc}}" hint-placeholder-val="{{false}}">
+                                <div style="border: 1px solid #DCE4F0; border-radius: 8px; overflow: hidden; background: #FFFFFF">
+                                  <div style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #F7F9FC">
+                                    <button type="button" onClick="{{d.accToggle}}" aria-expanded="{{d.accOpenStr}}" style="flex: 1; min-width: 0; display: inline-flex; align-items: center; gap: 8px; border: none; background: none; padding: 0; cursor: pointer; font-size: 12px; font-weight: 700; letter-spacing: 0.3px; color: #56607A; text-transform: uppercase; text-align: left"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#56607A" stroke-width="2.4" style="{{d.chevStyle}}" stroke-linecap="round" stroke-linejoin="round"><path d="M19.92 8.95l-6.52 6.52c-.77.77-2.03.77-2.8 0L4.08 8.95"></path></svg>{{d.accTitle}}</button>
+                                    <sc-if value="{{d.canRemove}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{d.onRemove}}" style="flex-shrink: 0; display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 8px; border: 1px solid #E4C4C0; border-radius: 6px; background: #FFFFFF; font-size: 12px; font-weight: 600; color: #B42318; cursor: pointer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>Remove</button></sc-if>
+                                  </div>
+                                  <sc-if value="{{d.accOpen}}" hint-placeholder-val="{{true}}">
+                                    <div style="display: flex; flex-direction: column; gap: 14px; padding: 14px 12px; border-top: 1px solid #EEF2F7">
+                                      <sc-for list="{{d.accSubs}}" as="ad" hint-placeholder-count="2">
+                                        <div style="{{ad.subGrid}}">
+                                          <sc-for list="{{ad.fields}}" as="f" hint-placeholder-count="2">
+                                            <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+                                              <label for="{{f.id}}" style="font-size: 13px; font-weight: 500; color: #3A4458">{{f.label}}</label>
+                                              <sc-if value="{{f.isText}}" hint-placeholder-val="{{true}}"><input id="{{f.id}}" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.ph}}" style="height: 38px; box-sizing: border-box; border: 1px solid #C9D3E3; border-radius: 6px; padding: 0 12px; font-size: 13.5px; color: #1B2230; background: #FFFFFF; width: 100%"></sc-if>
+                                              <sc-if value="{{f.isSearch}}" hint-placeholder-val="{{false}}"><div style="position: relative"><input id="{{f.id}}" value="{{f.value}}" onChange="{{f.onChange}}" placeholder="{{f.ph}}" style="height: 38px; box-sizing: border-box; border: 1px solid #C9D3E3; border-radius: 6px; padding: 0 38px 0 12px; font-size: 13.5px; color: #1B2230; background: #FFFFFF; width: 100%"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3A4458" stroke-width="2" style="position: absolute; right: 12px; top: 11px; pointer-events: none" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 21a9.5 9.5 0 1 0 0-19 9.5 9.5 0 0 0 0 19ZM22 22l-2-2"></path></svg></div></sc-if>
+                                              <sc-if value="{{f.isSelect}}" hint-placeholder-val="{{false}}"><div style="position: relative"><select id="{{f.id}}" value="{{f.value}}" onChange="{{f.onChange}}" style="height: 38px; box-sizing: border-box; border: 1px solid #C9D3E3; border-radius: 6px; padding: 0 34px 0 12px; font-size: 13.5px; color: #1B2230; background: #FFFFFF; width: 100%; appearance: none"><sc-for list="{{f.opts}}" as="op" hint-placeholder-count="3"><option value="{{op.v}}">{{op.t}}</option></sc-for></select><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1B2230" stroke-width="2" style="position: absolute; right: 12px; top: 13px; pointer-events: none" stroke-linecap="round" stroke-linejoin="round"><path d="M19.92 8.95l-6.52 6.52c-.77.77-2.03.77-2.8 0L4.08 8.95"></path></svg></div><sc-if value="{{f.isDef}}" hint-placeholder-val="{{false}}"><span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: #56607A"><svg width="10" height="10" viewBox="0 0 24 24" fill="#8A93A6"><path d="M6 3h12v18l-6-4-6 4z"></path></svg>Your default</span></sc-if><sc-if value="{{f.askDef}}" hint-placeholder-val="{{false}}"><div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 6px 10px; background: #FFF8E1; border: 1px solid #F2D48A; border-radius: 6px; font-size: 12px; color: #3A4458"><span>Set <b>{{f.defLabel}}</b> as your default?</span><button type="button" onClick="{{f.setDef}}" style="border: none; background: none; padding: 0; font-size: 12px; font-weight: 700; color: #2456C9">Set as default</button><button type="button" onClick="{{f.noDef}}" style="border: none; background: none; padding: 0; font-size: 12px; font-weight: 600; color: #56607A">Not now</button></div></sc-if></sc-if>
+                                            </div>
+                                          </sc-for>
+                                        </div>
+                                      </sc-for>
+                                    </div>
+                                  </sc-if>
+                                </div>
+                              </sc-if>
                             </div>
                             </sc-for>
                           </div>
@@ -1518,7 +1542,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #7FA2E6;outline-offset
               </sc-for>
               <sc-if value="{{s.noRows}}" hint-placeholder-val="{{false}}"><div style="padding: 16px 12px; border-top: 1px solid #EEF2F7; font-size: 13px; color: #56607A">No nutrients match this filter.</div></sc-if>
             </div>
-            <div style="display: flex; gap: 10px; align-items: center"><div style="position: relative"><select aria-label="Add a nutrient" value="" onChange="{{s.onAddNut}}" style="height: 36px; box-sizing: border-box; border: 1.5px solid #2F80ED; border-radius: 6px; padding: 0 34px 0 14px; font-size: 13.5px; font-weight: 700; color: #1D5FD0; background: #EAF2FE; appearance: none; cursor: pointer"><sc-for list="{{s.addOpts}}" as="o" hint-placeholder-count="6"><option value="{{o.v}}">{{o.t}}</option></sc-for></select><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1D5FD0" stroke-width="2.4" style="position: absolute; right: 12px; top: 11px; pointer-events: none" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12h12M12 18V6"></path></svg></div><span style="font-size: 12px; color: #56607A">Adds an extra nutrient row with its unit</span></div>
+            <div style="display: flex; gap: 10px; align-items: center"><div style="position: relative; display: inline-flex"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1D5FD0" stroke-width="2" style="position: absolute; left: 12px; top: 10px; pointer-events: none"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg><select aria-label="Add a nutrient" value="" onChange="{{s.onAddNut}}" style="width: 156px; height: 36px; box-sizing: border-box; border: 1.5px solid #2F80ED; border-radius: 6px; padding: 0 14px 0 33px; font-size: 13.5px; font-weight: 700; color: #1D5FD0; background: #EAF2FE; appearance: none; cursor: pointer"><sc-for list="{{s.addOpts}}" as="o" hint-placeholder-count="6"><option value="{{o.v}}">{{o.t}}</option></sc-for></select></div><span style="font-size: 12px; color: #56607A">Adds an extra nutrient row with its unit</span></div>
           </sc-if>
 
           <sc-if value="{{s.isLabelTable}}" hint-placeholder-val="{{false}}">
@@ -2433,7 +2457,7 @@ class Component extends DCLogic {
       chk: {},
       vals: { 'US-p65chem': 'Acrylamide', 'US-p65head': 'WARNING:' },
       defs: { p65head: 'WARNING:', fortUnit: 'mg' }, ask: null,
-      fort: ['f0']
+      fort: ['f0'], fortOpen: {}
     };
   }
 
@@ -2673,13 +2697,25 @@ class Component extends DCLogic {
         ['fort', 'Is your product fortified? *', () => {
           const out = [U('fort', 'Upload Fortification Certificate (only PDF up to 2 MB is allowed) *', 'Fortification_Certificate.pdf')];
           const flist = Array.isArray(st.fort) ? st.fort : ['f0'];
+          const openMap = st.fortOpen || {};
+          // Each fortificant collapses into its own accordion so the section
+          // stays compact; a newly added one defaults to open.
           flist.forEach((fid, i) => {
+            const open = openMap[fid] !== false;
             const g1 = F('fortN' + fid, [{ l: 'Fortified with *' }], 1);
-            g1.hasHead = true; g1.headTitle = 'Fortificant ' + (i + 1);
-            g1.canRemove = flist.length > 1;
-            g1.onRemove = () => this.setState({ fort: flist.filter((x) => x !== fid) });
-            out.push(g1);
-            out.push(F('fortQ' + fid, [{ l: 'Quantity (per 100 g/ml) *' }, { l: 'Unit *', mem: 'fortUnit', type: 'select', opts: ['Select unit', 'mg', 'µg', 'IU', 'g'] }], 2));
+            const gq = F('fortQ' + fid, [{ l: 'Quantity (per 100 g/ml) *' }, { l: 'Unit *', mem: 'fortUnit', type: 'select', opts: ['Select unit', 'mg', 'µg', 'IU', 'g'] }], 2);
+            out.push(Object.assign({}, blank, {
+              isAcc: true,
+              accTitle: 'Fortificant ' + (i + 1),
+              accOpen: open,
+              accOpenStr: open ? 'true' : 'false',
+              chevStyle: 'flex-shrink: 0; transition: transform .15s ease; transform: rotate(' + (open ? '180deg' : '0deg') + ')',
+              accToggle: () => set('fortOpen', { [fid]: !open }),
+              canRemove: flist.length > 1,
+              onRemove: () => this.setState({ fort: flist.filter((x) => x !== fid) }),
+              accSubs: [g1, gq],
+              style: cellBase + full
+            }));
           });
           out.push(Object.assign({}, blank, { isAdd: true, addLabel: 'Add fortificant', style: cellBase + full, add: () => this.setState({ fort: flist.concat(['f' + Date.now()]) }) }));
           return out;
@@ -2948,7 +2984,7 @@ class Component extends DCLogic {
       const selStyle = 'display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 13px; font-size: 12.5px; font-weight: 700; ' + (selN === reqN.length ? 'color: #1E7B45; background: #E7F6EC' : selN === 0 ? 'color: #B42318; background: #FDECEC' : 'color: #B7791F; background: #FFF4DB');
       const ADDABLE = [['Vitamin A', 'µg'], ['Vitamin C', 'mg'], ['Vitamin D', 'µg'], ['Vitamin E', 'mg'], ['Vitamin K', 'µg'], ['Thiamine (B1)', 'mg'], ['Riboflavin (B2)', 'mg'], ['Niacin (B3)', 'mg'], ['Vitamin B6', 'mg'], ['Folate', 'µg'], ['Vitamin B12', 'µg'], ['Biotin', 'µg'], ['Pantothenic Acid', 'mg'], ['Phosphorus', 'mg'], ['Magnesium', 'mg'], ['Zinc', 'mg'], ['Iodine', 'µg'], ['Selenium', 'µg'], ['Copper', 'mg'], ['Manganese', 'mg'], ['Chromium', 'µg'], ['Molybdenum', 'µg'], ['Chloride', 'mg'], ['Omega-3 (ALA)', 'g'], ['Caffeine', 'mg']];
       const existingNut = D.NUTS.map((n) => n.name);
-      const addOpts = [{ v: '', t: '+ Add nutrient' }].concat(ADDABLE.filter((a) => existingNut.indexOf(a[0]) < 0).map((a) => ({ v: a[0] + '|' + a[1], t: a[0] + ' (' + a[1] + ')' })));
+      const addOpts = [{ v: '', t: 'Add nutrient' }].concat(ADDABLE.filter((a) => existingNut.indexOf(a[0]) < 0).map((a) => ({ v: a[0] + '|' + a[1], t: a[0] + ' (' + a[1] + ')' })));
       const onAddNut = (e) => { const v = e.target.value; if (!v) return; const p = v.split('|'); this.setState({ customNuts: (st.customNuts || []).concat([{ id: 'cn' + Date.now(), name: p[0], unit: p[1], req: CO.slice() }]) }); };
       sec({ title: 'Nutrient Values', isSources: true, isMasterTable: true, addOpts: addOpts, onAddNut: onAddNut, selTxt: selN + ' of ' + reqN.length + ' final values selected', selStyle,
         recChip: recRecord ? recRecord.code + ' · ' + recRecord.name : 'No Recipe / FG linked',
