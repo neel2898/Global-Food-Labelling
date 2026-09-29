@@ -3267,13 +3267,18 @@ window.__gflTabs = function(){
   var FK = ["ProductIdentity","Ingredients","Declarations","Nutrition",null,null,null];
   var mounted = {};
   var curFull = 0;
+  // The country tab kept in sync across every step, so editing a specific
+  // country from the dashboard (or switching tabs mid-flow) lands the whole
+  // journey on that market instead of resetting to Master each step.
+  var curTab = 'MASTER';
+  function applyTab(inst){ if(!inst) return; inst.props.tab = curTab; if(inst.state && 'tab' in inst.state) inst.state.tab = curTab; }
   function firstWorking(){ for (var i=0;i<FK.length;i++) if (FK[i]) return i; return 0; }
   function nextWorking(fi){ for (var i=fi+1;i<FK.length;i++) if (FK[i]) return i; return -1; }
   function prevWorking(fi){ for (var i=fi-1;i>=0;i--) if (FK[i]) return i; return -1; }
   function mount(key){
     if (mounted[key]) return;
     var host = document.querySelector('.step-pane[data-step="'+key+'"]');
-    mounted[key] = DCX.boot({ ComponentClass: window.STEP_COMPONENTS[key], templateEl: document.getElementById('tpl-'+key), container: host, imports: {}, props: { tab: 'MASTER' } });
+    mounted[key] = DCX.boot({ ComponentClass: window.STEP_COMPONENTS[key], templateEl: document.getElementById('tpl-'+key), container: host, imports: {}, props: { tab: curTab } });
   }
   function render(){
     document.querySelectorAll('.step').forEach(function(s){
@@ -3293,7 +3298,7 @@ window.__gflTabs = function(){
     var isMaster = !sel || /master/i.test(sel.textContent);
     pv.style.display = isMaster ? 'none' : '';  // Preview only on country tabs, not Master
   }
-  function show(fi){ if (fi<0 || fi>=FK.length || !FK[fi]) return; curFull=fi; mount(FK[fi]); var inst=mounted[FK[fi]]; if (inst && inst.forceUpdate) inst.forceUpdate(); render(); updatePreview(); window.scrollTo(0,0); }
+  function show(fi, tab){ if (fi<0 || fi>=FK.length || !FK[fi]) return; if (typeof tab === 'string' && tab) curTab = tab; curFull=fi; mount(FK[fi]); var inst=mounted[FK[fi]]; applyTab(inst); if (inst && inst.forceUpdate) inst.forceUpdate(); render(); updatePreview(); window.scrollTo(0,0); }
   document.addEventListener('click', function(){ requestAnimationFrame(updatePreview); }, true);
   document.querySelectorAll('.step').forEach(function(s){ s.addEventListener('click', function(){ show(parseInt(s.dataset.fi,10)); }); });
   document.getElementById('btnPrev').addEventListener('click', function(){ var p=prevWorking(curFull); if(p>=0) show(p); });
@@ -3306,8 +3311,9 @@ window.__gflTabs = function(){
     if (!m) return; e.preventDefault();
     var base = m[1], tab = m[2] || 'MASTER', fi = FK.indexOf(base);
     if (fi < 0) return;
-    if (fi !== curFull) show(fi);
-    var inst = mounted[base]; if (inst) { inst.props.tab = tab; inst.forceUpdate(); }
+    curTab = tab;
+    if (fi !== curFull) show(fi, tab);
+    var inst = mounted[base]; if (inst) { applyTab(inst); inst.forceUpdate(); }
   }, true);
   window.__lmShow = show;
   show(firstWorking());
@@ -3383,15 +3389,25 @@ window.__gflTabs = function(){
   var nl=document.getElementById('btnNewLabel'); if(nl) nl.addEventListener('click',function(){ if(window.__lmShow) window.__lmShow(0); showView('lm'); });
   var cd=document.getElementById('lmCrumbDash'); if(cd) cd.addEventListener('click',function(){ showView('dash'); });
   var sr=document.getElementById('btnSendReview'); if(sr) sr.addEventListener('click',function(){ if(window.__saveLabel) window.__saveLabel(); });
-  var tb=document.getElementById('dtbody'); if(tb) tb.addEventListener('click',function(e){ var ed=e.target.closest?e.target.closest('[data-edit]'):null; if(ed){ if(window.__lmShow) window.__lmShow(0); showView('lm'); return; }
+  var tb=document.getElementById('dtbody'); if(tb) tb.addEventListener('click',function(e){ var ed=e.target.closest?e.target.closest('[data-edit]'):null; if(ed){
+      // Land the editor on exactly what the user clicked: a country row opens
+      // that market's tab; a master row opens Master (or the single market).
+      var row=ed.closest?ed.closest('.drow'):null;
+      var cc=row?row.getAttribute('data-country'):null;
+      var sr=row?row.getAttribute('data-sr'):null;
+      var m=sr?DATA().find(function(x){return String(x.sr)===String(sr);}):null;
+      var tab=cc||(m&&m.countries&&m.countries.length>=2?'MASTER':(m&&m.countries&&m.countries.length?m.countries[0]:'MASTER'));
+      if(window.__lmShow) window.__lmShow(0, tab); showView('lm'); return; }
     var childRow=e.target.closest?e.target.closest('.drow.child'):null; if(childRow && !e.target.closest('.dact')){ openPreview(childRow.getAttribute('data-sr'), childRow.getAttribute('data-country')); } });
   var dpvScrim=document.getElementById('dpvScrim');
   function closePv(){ if(dpvScrim){ dpvScrim.classList.remove('open'); dpvScrim.setAttribute('aria-hidden','true'); } }
   var dpvClose=document.getElementById('dpvClose'); if(dpvClose) dpvClose.addEventListener('click',closePv);
   if(dpvScrim) dpvScrim.addEventListener('click',function(e){ if(e.target===dpvScrim) closePv(); });
-  var dpvOpenBtn=document.getElementById('dpvOpen'); if(dpvOpenBtn) dpvOpenBtn.addEventListener('click',function(){ closePv(); if(window.__lmShow) window.__lmShow(0); showView('lm'); });
+  var pvCC=null;
+  var dpvOpenBtn=document.getElementById('dpvOpen'); if(dpvOpenBtn) dpvOpenBtn.addEventListener('click',function(){ closePv(); if(window.__lmShow) window.__lmShow(0, pvCC||'MASTER'); showView('lm'); });
   function openPreview(sr, cc){
     var m=DATA().find(function(x){return String(x.sr)===String(sr);}); if(!m) return;
+    pvCC=cc;
     var nm=NAME[cc]||cc;
     document.getElementById('dpvFlag').setAttribute('style','background:'+FLAG[cc]);
     document.getElementById('dpvTitle').textContent=m.name+' – '+nm+' label';
