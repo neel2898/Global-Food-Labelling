@@ -8,75 +8,72 @@
   :root{
     --yellow:#FFD700; --pin:#F5B800; --pin-ink:#1B2230; --blue:#2F80ED; --accent:#2456C9;
     --ink:#1B2230; --muted:#6B6A68; --muted2:#56607A; --line:#E4E6EA; --line2:#C9D3E3;
-    --bg:#F5F4EF; --panel:#FFFFFF; --soft:#F6F7F9; --lm:#2456C9; --lm-bg:#EAF1FF; --lm-line:#BBD0F3;
+    --soft:#F6F7F9; --lm:#2456C9; --lm-bg:#EAF1FF; --lm-line:#BBD0F3;
     --fssai:#8A4B00; --fssai-bg:#FBEEDD; --fssai-line:#EAC9A0;
     --hl:#FFF7DD; --hl-line:#F3CE4A; --barbg:#FFF8E1; --barline:#F3D98A;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;background:#EDEFF3;color:var(--ink);font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px}
+  html,body{margin:0;height:100%;background:rgba(20,24,33,.55);color:var(--ink);font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px}
   button{font-family:inherit;cursor:pointer}
   .art{font-family:Arial,Helvetica,sans-serif}
 
-  /* this standalone page just hosts the overlay, shown open */
-  #lpHost{position:relative}
-
-  /* ===================== overlay shell ===================== */
-  .lp{position:fixed;inset:0;z-index:1000;background:#fff;display:flex;flex-direction:column}
-  .lp-head{display:flex;align-items:center;gap:14px;padding:12px 22px;border-bottom:1px solid var(--line);flex-shrink:0}
+  /* ===================== 90% modal shell ===================== */
+  .lp{position:fixed;top:5vh;left:5vw;width:90vw;height:90vh;z-index:1000;background:#fff;border-radius:14px;box-shadow:0 24px 70px rgba(10,14,24,.45);display:flex;flex-direction:column;overflow:hidden}
+  .lp-head{display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid var(--line);flex-shrink:0}
   .lp-head h1{margin:0;font-size:18px;font-weight:700}
-  .lp-head .prod{margin-left:auto;font-size:13px;color:var(--muted2)}
-  .hbtn{height:38px;padding:0 14px;display:inline-flex;align-items:center;gap:8px;border:1px solid #2A3140;border-radius:8px;background:#fff;font-size:13px;font-weight:600;color:var(--ink)}
-  .hbtn.dark{background:#1F2430;color:#fff;border-color:#1F2430}
-  .hbtn.on{background:#1F2430;color:#fff;border-color:#1F2430}
+  .lp-head .prod{font-size:13px;color:var(--muted2);max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lp-spacer{flex:1}
+  .tabs{display:inline-flex;gap:3px;padding:3px;background:#E3E9F2;border-radius:9px}
+  .tabs .t{height:30px;padding:0 12px;display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--muted2)}
+  .tabs .t.on{background:#fff;color:var(--ink);font-weight:700;box-shadow:0 1px 3px rgba(20,32,60,.16)}
+  .flag{width:18px;height:12px;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.14)}
+  .hbtn{height:36px;padding:0 13px;display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--line2);border-radius:8px;background:#fff;font-size:13px;font-weight:600;color:var(--ink)}
   .hbtn .ic{width:16px;height:16px}
+  .hbtn:hover{border-color:#9FB2D6}
+  .hbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .hbtn.on .ic{stroke:#fff}
   .lp-x{width:34px;height:34px;border:0;background:none;color:var(--muted2);font-size:20px;border-radius:8px}
   .lp-x:hover{background:var(--soft)}
   .divv{width:1px;height:26px;background:var(--line)}
 
-  .lp-cbar{display:flex;align-items:center;gap:10px;padding:10px 22px;background:var(--barbg);border-bottom:1px solid var(--barline);font-size:13px;color:#5C3300;flex-shrink:0}
+  .lp-cbar{display:flex;align-items:center;gap:10px;padding:9px 20px;background:var(--barbg);border-bottom:1px solid var(--barline);font-size:13px;color:#5C3300;flex-shrink:0}
   .lp-cbar .done{margin-left:auto;font-weight:700;color:var(--accent);background:none;border:0}
 
-  .lp-body{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 452px;min-height:0}
-  .lp-scroll{overflow:auto;padding:26px 24px 60px}
-  .lp-stage{display:grid;grid-template-columns:48px minmax(0,640px) 250px;gap:0;max-width:960px;margin:0 auto;position:relative}
+  .lp-body{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 430px;min-height:0}
+  .lp-scroll{overflow:auto;padding:24px 22px 56px}
+  .lp-stage{display:grid;grid-template-columns:46px minmax(0,600px) 250px;max-width:940px;margin:0 auto;position:relative}
   .lp-addcol,.lp-callcol{position:relative}
   .lp-card{background:#fff;border:1px solid #D7DBE2;border-radius:4px}
-  .lp-card .art{color:#111;padding:26px 28px}
+  .lp-card .art{color:#111;padding:24px 26px}
 
-  /* add buttons / pins in left gutter (absolutely positioned by JS) */
-  .addbtn{position:absolute;left:8px;width:28px;height:28px;border-radius:50%;border:1.5px dashed #B9C0CD;background:#fff;color:#8A93A6;font-size:17px;line-height:1;display:none;align-items:center;justify-content:center}
+  .addbtn{position:absolute;left:7px;width:28px;height:28px;border-radius:50%;border:1.5px dashed #B9C0CD;background:#fff;color:#8A93A6;font-size:17px;line-height:1;display:none;align-items:center;justify-content:center}
   .lp.commenting .addbtn{display:flex}
   .addbtn:hover{border-color:var(--accent);color:var(--accent)}
-  .pin{position:absolute;left:8px;width:28px;height:28px;border-radius:50%;background:var(--pin);color:var(--pin-ink);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.25);z-index:2}
+  .pin{position:absolute;left:7px;width:28px;height:28px;border-radius:50%;background:var(--pin);color:var(--pin-ink);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.25);z-index:2}
   .pin.dashed{background:#fff;border:1.5px dashed var(--pin);color:#9A7400;box-shadow:none}
   .pin.sel{outline:2px solid var(--accent);outline-offset:1px}
 
-  /* font-height callouts in right gutter (absolute by JS) */
   .callhdr{font-size:11px;font-weight:700;color:var(--ink);letter-spacing:.3px}
   .callhdr .sub{font-weight:400;color:var(--muted);font-size:10.5px;line-height:1.4;margin-top:2px}
-  .call{position:absolute;left:0;display:none;align-items:flex-start;gap:0;width:244px}
+  .call{position:absolute;left:0;display:none;align-items:flex-start;width:244px}
   .lp.showcall .call{display:flex}
-  .call .tick{flex-shrink:0;width:16px;border-top:1.5px dotted #B9C0CD;margin-top:9px}
+  .call .tick{flex-shrink:0;width:14px;border-top:1.5px dotted #B9C0CD;margin-top:9px}
   .call .ca{display:flex;flex-direction:column;gap:2px}
-  .call .r1{display:flex;align-items:center;gap:6px;font-family:'Inter',sans-serif}
+  .call .r1{display:flex;align-items:center;gap:6px}
   .call .mm{font-size:12px;font-weight:800;color:var(--ink);font-family:ui-monospace,Menlo,Consolas,monospace}
-  .tag{font-size:9.5px;font-weight:800;padding:1px 5px;border-radius:4px;letter-spacing:.3px}
-  .tag.lm{color:var(--lm);background:var(--lm-bg);border:1px solid var(--lm-line)}
-  .tag.fssai{color:var(--fssai);background:var(--fssai-bg);border:1px solid var(--fssai-line)}
+  .tag{font-size:9.5px;font-weight:800;padding:1px 5px;border-radius:4px;letter-spacing:.3px;white-space:nowrap}
+  .tag.a{color:var(--lm);background:var(--lm-bg);border:1px solid var(--lm-line)}
+  .tag.b{color:var(--fssai);background:var(--fssai-bg);border:1px solid var(--fssai-line)}
   .call .r2{font-size:11px;color:var(--muted)}
   .call .nomin{font-size:12px;font-weight:700;color:var(--muted2);font-family:ui-monospace,monospace}
 
-  /* highlight a measured element */
   .el{scroll-margin-top:90px}
   .el.hl{background:var(--hl);outline:2px solid var(--hl-line);outline-offset:3px;border-radius:3px}
 
-  /* ---- label artwork ---- */
-  .brandlogo{width:150px;height:56px;border:1px dashed #B9C0CD;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#8A93A6;font-size:12px;margin:0 auto}
-  .pname{font-size:23px;font-weight:800}
+  .brandlogo{width:150px;height:54px;border:1px dashed #B9C0CD;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#8A93A6;font-size:12px;margin:0 auto}
+  .pname{font-size:22px;font-weight:800;line-height:1.15}
   .vlogo{width:20px;height:20px;border:2px solid #0A8A2E;border-radius:3px;display:flex;align-items:center;justify-content:center}
   .vlogo i{width:9px;height:9px;border-radius:50%;background:#0A8A2E;display:block}
-  .nlogo{width:20px;height:20px;border:2px solid #1E66C9;border-radius:3px;display:flex;align-items:center;justify-content:center}
-  .nlogo i{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:8px solid #1E66C9}
   .nf{border:1px solid #000;font-size:12px}
   .nf .hd{font-weight:800;padding:5px 8px;border-bottom:1px solid #000}
   .nf .sv{display:flex;justify-content:space-between;padding:4px 8px;font-weight:700;border-bottom:1px solid #000}
@@ -85,18 +82,27 @@
   .nf th{font-weight:700}
   .nf td.n,.nf th.n{text-align:center}
   .nf .ft{padding:5px 8px;border-top:1px solid #000}
+  /* US nutrition facts */
+  .usnf{border:1.5px solid #000;padding:4px 8px 8px;width:300px;font-size:12px}
+  .usnf h3{margin:0;font-size:26px;font-weight:900;letter-spacing:-.5px;line-height:1}
+  .usnf .rule{border-bottom:1px solid #000}
+  .usnf .rule.thick{border-bottom-width:8px}
+  .usnf .rule.mid{border-bottom-width:4px}
+  .usnf .r{display:flex;justify-content:space-between;font-size:12px;line-height:1.5}
+  .usnf .r.b{font-weight:800}
+  .usnf .ind{padding-left:14px}.usnf .ind2{padding-left:26px}
+  .usnf .sm{font-size:10px;line-height:1.35}
   .declbox{border:1px solid #CDd3dd;border-radius:6px;overflow:hidden}
   .declrow{display:grid;grid-template-columns:200px 1fr;gap:10px;padding:11px 14px;border-top:1px solid #EDEFF2}
   .declrow:first-child{border-top:0}
   .declrow .k{font-weight:700;font-size:13px}
   .declrow .v{font-size:13px}
-  .mutecard{display:flex;gap:10px}
   .ghost{border:1px dashed #B9C0CD;border-radius:4px;color:#8A93A6;font-size:11px;padding:8px 10px;display:flex;align-items:center;justify-content:center}
 
-  .reg-note{border:1px solid var(--line);background:#FcFcFb;border-radius:8px;padding:14px 16px;font-size:11px;line-height:1.55;color:var(--muted2);max-width:720px;margin:22px auto 0}
+  .reg-note{border:1px solid var(--line);background:#FcFcFb;border-radius:8px;padding:14px 16px;font-size:11px;line-height:1.55;color:var(--muted2);max-width:700px;margin:22px auto 0}
   .reg-note li{margin:5px 0}
 
-  /* ===================== right panel ===================== */
+  /* right panel */
   .lp-panel{border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0;background:#fff}
   .lp-tabs{display:flex;gap:18px;padding:12px 20px 0;border-bottom:1px solid var(--line);flex-shrink:0}
   .lp-tab{border:0;background:none;padding:6px 2px 12px;font-size:14px;font-weight:600;color:var(--muted2);border-bottom:2px solid transparent;display:flex;align-items:center;gap:7px}
@@ -114,7 +120,7 @@
   .newc .foot{display:flex;align-items:center;gap:10px;margin-top:10px}
   .newc .foot .note{font-size:11.5px;color:var(--muted);flex:1}
   .mini{height:34px;padding:0 14px;border-radius:8px;font-size:13px;font-weight:700;border:1px solid var(--line2);background:#fff;color:var(--ink)}
-  .mini.pri{background:#1F2430;color:#fff;border-color:#1F2430}
+  .mini.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
   .mini.pri[disabled]{background:#C9CDD6;border-color:#C9CDD6;cursor:not-allowed}
 
   .clist-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
@@ -128,18 +134,17 @@
   .cmt .top{display:flex;align-items:baseline;gap:8px}
   .cmt .en{font-weight:700;font-size:13px;color:var(--ink);cursor:pointer}
   .cmt .en:hover{color:var(--accent)}
-  .cmt .tm{margin-left:auto;font-size:11px;color:var(--muted)}
+  .cmt .tm{margin-left:auto;font-size:11px;color:var(--muted);white-space:nowrap}
   .cmt .bd{font-size:13px;line-height:1.5;margin:4px 0 2px}
   .cmt .by{font-size:11.5px;color:var(--muted)}
   .cmt .acts{margin-top:6px;display:flex;gap:14px}
   .cmt .acts button{border:0;background:none;color:var(--accent);font-size:12px;font-weight:700;padding:0}
 
   .dlnote{display:flex;gap:10px;align-items:flex-start;background:#F3F6FB;border:1px solid #DCE6F6;border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:1.5;color:var(--muted2);margin:18px 0 14px}
-  .acc{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:var(--muted2);margin:10px 0}
+  .acc{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:var(--muted2);margin:10px 0;line-height:1.45}
   .dlbtn{height:42px;padding:0 20px;background:var(--yellow);border:0;border-radius:8px;font-size:14px;font-weight:700;color:#1B2230;display:inline-flex;align-items:center;gap:8px;margin-top:6px}
   .dlbtn[disabled]{background:#E6E2C2;color:#9a9578;cursor:not-allowed}
 
-  /* guidelines tab tables */
   .gtab h3{font-size:14px;font-weight:800;margin:4px 0 10px}
   .gt{border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:12px;margin-bottom:18px}
   .gt .gr{display:grid;border-top:1px solid var(--line)}
@@ -147,9 +152,8 @@
   .gt .gc{padding:7px 10px}
   .gt .gc+.gc{border-left:1px solid var(--line)}
   .gt .hd{background:var(--soft);font-weight:700}
-  .gt .lm-k{color:var(--lm)}
 
-  /* ===================== download report ===================== */
+  /* download report */
   .scrim{position:fixed;inset:0;background:rgba(20,24,33,.62);z-index:2000;overflow:auto;display:none}
   .scrim.open{display:block}
   .rbar{position:sticky;top:0;display:flex;align-items:center;gap:12px;padding:12px 20px;background:#1F2430;color:#fff;z-index:2}
@@ -162,8 +166,7 @@
   .legend{border:1px solid #D7DBE2;border-radius:6px;padding:12px 14px;font-size:11px;line-height:1.6;margin-bottom:22px}
   .legend .lh{font-weight:800;letter-spacing:.3px}
   .rstage{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:10px;position:relative}
-  .rcall{position:relative}
-  @media(max-width:1000px){.lp-body{grid-template-columns:1fr}.lp-panel{border-left:0;border-top:1px solid var(--line);max-height:60vh}.lp-stage{grid-template-columns:40px minmax(0,1fr) 0}.lp.showcall .call{position:static;display:none}}
+  @media(max-width:1000px){.lp{top:0;left:0;width:100vw;height:100vh;border-radius:0}.lp-body{grid-template-columns:1fr}.lp-panel{border-left:0;border-top:1px solid var(--line);max-height:58vh}.lp-stage{grid-template-columns:40px minmax(0,1fr) 0}.lp.showcall .call{display:none}}
 </style>
 </head>
 <body>
@@ -171,141 +174,208 @@
 <script>
 /* ================================================================
    Label Preview — Comments & Font Heights
-   Faithful to client PRD + mock-up (India example, Tender Coconut).
-   Self-contained module: window.LabelPreview.open(host) mounts it.
+   Real product (Tangy Tomato Makhana) · IN / US / CA · per PRD + mock-up
    ================================================================ */
 window.LabelPreview = (function(){
   "use strict";
 
-  /* -------- font-height data (India, from the PRD guideline tables) -------- */
-  var PDP = { lm:'462.3', fssai:'400.0' };
-  // element callouts, in label order. page: which download page (1 label / 2 declarations)
-  var CALL = {
-    brandlogo:{min:null,note:'Brand logo',page:1},
-    name:{min:'2',tag:'FSSAI',mould:'4',note:'Product name',page:1},
-    veg:{min:'8',tag:'FSSAI',mould:null,note:'Veg logo square · circle 4 mm',page:1},
-    illustrative:{min:'3',tag:'FSSAI',mould:null,note:'Mandatory declaration',page:1},
-    ingredients:{min:'2',tag:'FSSAI',mould:'4',note:'Ingredients',page:1},
-    allergens:{min:'3',tag:'FSSAI',mould:null,note:'Mandatory declaration',page:1},
-    nutrition:{min:'2',tag:'FSSAI',mould:'4',note:'Nutrition info',page:1},
-    nifoot:{min:'2',tag:'FSSAI',mould:'4',note:'NI footnote',page:1},
-    mfd:{min:'2',tag:'FSSAI',mould:'4',note:'Mfd. by, Lic. No.',page:1},
-    consumer:{min:'2.5',tag:'LM',mould:'4',note:'Consumer care',page:1},
-    netq:{min:'2.5',tag:'LM',mould:'4',note:'Net qty',page:2},
-    mrp:{min:'2.5',tag:'LM',mould:'4',note:'MRP',page:2},
-    usp:{min:'1.25',tag:'LM',mould:'2',note:'USP',page:2},
-    batch:{min:'2',tag:'FSSAI',mould:'4',note:'Batch no.',page:2},
-    pkgdate:{min:'2.5',tag:'LM',mould:'4',note:'Pkg. date',page:2},
-    expiry:{min:'2.5',tag:'LM',mould:'4',note:'Expiry date',page:2},
-    storage:{min:'2',tag:'FSSAI',mould:'4',note:'Storage',page:2},
-    packsym:{min:null,note:'Pack symbol & barcode',page:2}
+  var FLAGS={
+    IN:'<svg class="flag" viewBox="0 0 18 12"><rect width="18" height="4" fill="#FF9933"/><rect y="4" width="18" height="4" fill="#fff"/><rect y="8" width="18" height="4" fill="#138808"/><circle cx="9" cy="6" r="1.4" fill="none" stroke="#000080" stroke-width=".6"/></svg>',
+    US:'<svg class="flag" viewBox="0 0 18 12"><rect width="18" height="12" fill="#fff"/><rect width="18" height="2" fill="#B22234"/><rect y="4" width="18" height="2" fill="#B22234"/><rect y="8" width="18" height="2" fill="#B22234"/><rect width="8" height="6" fill="#3C3B6E"/></svg>',
+    CA:'<svg class="flag" viewBox="0 0 18 12"><rect width="18" height="12" fill="#fff"/><rect width="4.5" height="12" fill="#D52B1E"/><rect x="13.5" width="4.5" height="12" fill="#D52B1E"/><rect x="7.5" y="4" width="3" height="4" fill="#D52B1E"/></svg>'
   };
-  var EL_NAME = { brandlogo:'Brand logo', name:'Product name', veg:'Veg / non-veg logo', illustrative:'Illustrative note', ingredients:'Ingredients', allergens:'Allergens', nutrition:'Nutritional information', nifoot:'RDA footnote', mfd:'Manufactured by', consumer:'Consumer care', netq:'Net quantity', mrp:'MRP', usp:'USP', batch:'Batch number', pkgdate:'Date of packaging', expiry:'Date of expiry', storage:'Storage instructions', packsym:'Pack symbol & barcode' };
+  var CNAME={IN:'India',US:'United States',CA:'Canada'};
 
-  /* -------- seed comments (match the mock-up) -------- */
-  var seed = [
-    {no:1, el:'ingredients', text:'Tender coconut preparation is declared at 9%. Confirm against the final recipe sheet before print.', author:'Ananya R.', role:'R&D', time:'29 Sep, 4:40 pm', mine:false},
-    {no:2, el:'nutrition', text:'These are theoretical values. Replace with lab-report figures once the NABL results are in.', author:'Vikram S.', role:'QA', time:'29 Sep, 4:58 pm', mine:false},
-    {no:3, el:'general', text:'This LSS covers mandatory text only. The front-of-pack layout follows the brand team’s artwork.', author:'Ananya R.', role:'R&D', time:'29 Sep, 5:10 pm', mine:false},
-    {no:4, el:'netq', text:'Keep clear space around the net quantity on artwork: 1× numeral height above and below, 2× on the left and right.', author:'Meera K.', role:'you', time:'30 Sep, 11:20 am', mine:true},
-    {no:5, el:'mrp', text:'MRP is left blank on purpose. The packaging vendor fills it at print stage.', author:'Meera K.', role:'you', time:'30 Sep, 11:31 am', mine:true}
-  ];
+  /* ---------- real label data (Tangy Tomato Makhana) ---------- */
+  var PRODUCT='Tangy Tomato Makhana';
+  var INGREDIENTS='Roasted Makhana (Foxnuts) (70%), Refined Sunflower Oil, Tangy Tomato Seasoning [Sugar, Iodised Salt, Tomato Powder (3%), Spices &amp; Condiments, Dried Mango Powder (Amchur), Acidity Regulators (INS 330, INS 296), Anticaking Agent (INS 551), Natural &amp; Nature-Identical Flavouring Substances].';
+  var INGREDIENTS_FR='Makhana rôti (noix de renard) (70 %), huile de tournesol raffinée, assaisonnement tomate piquante [sucre, sel iodé, poudre de tomate (3 %), épices et condiments, poudre de mangue séchée, régulateurs d’acidité (INS 330, INS 296), antiagglomérant (INS 551), arômes].';
+  var NUT=[['Energy (kcal)','420','210','11'],['Total Carbohydrate (g)','60','30','11'],['Total Sugars (g)','3','1.5','-'],['Added Sugars (g)','3','1.5','6'],['Protein (g)','16','8','15'],['Total Fat (g)','13','6.5','10'],['Saturated Fat (g)','8','4','20'],['Trans Fat (g)','0','0','-'],['Cholesterol (mg)','0','0','-'],['Sodium (mg)','890','445','23'],['Dietary Fibre (g)','5','2.5','-'],['Calcium (mg)','60','30','-']];
+  var BRAND='CONNEDIT BUSINESS SOLUTIONS PVT. LTD.';
+  var ADDR='Gate No 6, BIADA Industrial Area, Purnia Sadar, Purnia, Bihar – 854301, India';
+  var CARE_EMAIL='wecare@farmley.com', CARE_PHONE='+91-9899955931';
+  var STORAGE='Store in a cool, dry and hygienic place. Once opened, consume within 7 days.';
+  var STORAGE_FR='Conserver dans un endroit frais, sec et propre. Une fois ouvert, consommer dans les 7 jours.';
 
-  var S = { fontHeights:true, comment:false, tab:'comments', comments:[], nextNo:1, sel:null, draft:null, host:null };
+  /* ---------- per-country font-height callouts ---------- */
+  var PDP={IN:{a:{t:'LM',area:'462.3'},b:{t:'FSSAI',area:'400.0'}}, US:{}, CA:{}};
+  // tag letter: a = primary (blue), b = secondary (amber)
+  var CALL={
+    IN:{
+      brandlogo:{min:null,note:'Brand logo',page:1},
+      name:{min:'2',tag:'FSSAI',cls:'b',mould:'4',note:'Product name',page:1},
+      veg:{min:'8',tag:'FSSAI',cls:'b',mould:null,note:'Veg logo square · circle 4 mm',page:1},
+      ingredients:{min:'2',tag:'FSSAI',cls:'b',mould:'4',note:'Ingredients',page:1},
+      allergens:{min:'3',tag:'FSSAI',cls:'b',mould:null,note:'Mandatory declaration',page:1},
+      nutrition:{min:'2',tag:'FSSAI',cls:'b',mould:'4',note:'Nutrition info',page:1},
+      nifoot:{min:'2',tag:'FSSAI',cls:'b',mould:'4',note:'NI footnote',page:1},
+      mfd:{min:'2',tag:'FSSAI',cls:'b',mould:'4',note:'Mfd. by, Lic. No.',page:1},
+      consumer:{min:'2.5',tag:'LM',cls:'a',mould:'4',note:'Consumer care',page:1},
+      netq:{min:'2.5',tag:'LM',cls:'a',mould:'4',note:'Net qty',page:2},
+      mrp:{min:'2.5',tag:'LM',cls:'a',mould:'4',note:'MRP',page:2},
+      usp:{min:'1.25',tag:'LM',cls:'a',mould:'2',note:'USP',page:2},
+      batch:{min:'2',tag:'FSSAI',cls:'b',mould:'4',note:'Batch no.',page:2},
+      pkgdate:{min:'2.5',tag:'LM',cls:'a',mould:'4',note:'Pkg. date',page:2},
+      expiry:{min:'2.5',tag:'LM',cls:'a',mould:'4',note:'Expiry date',page:2},
+      storage:{min:'2',tag:'FSSAI',cls:'b',mould:'4',note:'Storage',page:2},
+      packsym:{min:null,note:'Pack symbol &amp; barcode',page:2}
+    },
+    US:{
+      brandlogo:{min:null,note:'Brand logo',page:1},
+      name:{min:'½ largest',tag:'FDA',cls:'a',note:'Statement of identity · 21 CFR 101.3',page:1},
+      ingredients:{min:'1.6',tag:'FDA',cls:'a',note:'Ingredient list · 21 CFR 101.4',page:1},
+      allergens:{min:'1.6',tag:'FDA',cls:'a',note:'“Contains” · FALCPA',page:1},
+      nutrition:{min:'Cal 5.64 / val 2.12',tag:'FDA',cls:'a',note:'Nutrition Facts · 21 CFR 101.9(d)',page:1},
+      mfd:{min:'1.6',tag:'FDA',cls:'a',note:'Firm name &amp; address · 21 CFR 101.5',page:1},
+      coo:{min:'conspicuous',tag:'CBP',cls:'b',note:'Country of origin · 19 CFR 134',page:1},
+      netq:{min:'min 4.8',tag:'FPLA',cls:'b',note:'Net quantity · 21 CFR 101.7 (PDP-based)',page:1},
+      consumer:{min:'legible',tag:'FDA',cls:'a',note:'Consumer contact',page:1}
+    },
+    CA:{
+      brandlogo:{min:null,note:'Brand logo',page:1},
+      name:{min:'1.6',tag:'FDR',cls:'a',note:'Common name · FDR B.01.001',page:1},
+      ingredients:{min:'1.6',tag:'FDR',cls:'a',note:'List of ingredients · FDR B.01.008',page:1},
+      allergens:{min:'1.6 bold',tag:'FDR',cls:'a',note:'“Contains / Contient” · B.01.010.1',page:1},
+      nutrition:{min:'NFt format',tag:'FDR',cls:'a',note:'Nutrition Facts / Valeur nutritive · B.01.401',page:1},
+      mfd:{min:'1.6',tag:'SFCR',cls:'b',note:'Dealer name &amp; address',page:1},
+      coo:{min:'conspicuous',tag:'SFCR',cls:'b',note:'Country of origin / pays d’origine',page:1},
+      netq:{min:'1.6',tag:'SFCR',cls:'b',note:'Net quantity (metric)',page:1},
+      consumer:{min:'legible',tag:'SFCR',cls:'b',note:'Consumer contact',page:1}
+    }
+  };
+  var EL_NAME={brandlogo:'Brand logo',name:'Product name',veg:'Veg / non-veg logo',ingredients:'Ingredients',allergens:'Allergens',nutrition:'Nutritional information',nifoot:'RDA footnote',mfd:'Manufacturer details',consumer:'Consumer care',coo:'Country of origin',netq:'Net quantity',mrp:'MRP',usp:'USP',batch:'Batch number',pkgdate:'Date of packaging',expiry:'Date of expiry',storage:'Storage instructions',packsym:'Pack symbol & barcode'};
 
-  /* -------- label artwork (data-el on each measured element) -------- */
-  function cardHTML(){
+  /* ---------- seed comments ---------- */
+  function seedComments(){ return [
+    {no:1, el:'ingredients', cc:'IN', text:'Makhana is declared at 70%. Confirm against the final recipe sheet before print.', author:'Ananya R.', role:'R&D', time:'29 Sep, 4:40 pm', mine:false},
+    {no:2, el:'nutrition', cc:'IN', text:'These are theoretical values. Replace with lab-report figures once the NABL results are in.', author:'Vikram S.', role:'QA', time:'29 Sep, 4:58 pm', mine:false},
+    {no:3, el:'general', cc:'IN', text:'This LSS covers mandatory text only. The front-of-pack layout follows the brand team’s artwork.', author:'Ananya R.', role:'R&D', time:'29 Sep, 5:10 pm', mine:false},
+    {no:4, el:'netq', cc:'IN', text:'Keep clear space around the net quantity on artwork: 1× numeral height above and below, 2× on the left and right.', author:'Meera K.', role:'you', time:'30 Sep, 11:20 am', mine:true},
+    {no:5, el:'mrp', cc:'IN', text:'MRP is left blank on purpose. The packaging vendor fills it at print stage.', author:'Meera K.', role:'you', time:'30 Sep, 11:31 am', mine:true}
+  ]; }
+
+  var S={ cc:'IN', fontHeights:true, comment:false, tab:'comments', comments:[], nextNo:1, sel:null, draft:null, host:null };
+
+  /* ---------- nutrition renderers ---------- */
+  function nfIN(){
+    return '<div class="nf"><div class="hd">Nutritional Information</div>'
+      + '<div class="sv"><span>No. of Servings (approx.) : 5</span><span>Serving Size : 100 g</span></div>'
+      + '<table><tr><th>Nutrients</th><th class="n">Per 100 g</th><th class="n">Per Serve (100 g)</th><th class="n">%RDA/Serve</th></tr>'
+      + NUT.map(function(r){return '<tr><td>'+r[0]+'</td><td class="n">'+r[1]+'</td><td class="n">'+r[2]+'</td><td class="n">'+r[3]+'</td></tr>';}).join('')
+      + '</table><div class="ft">RDA of an average adult, NIN, ICMR, 2020</div></div>';
+  }
+  function nfUS(){
+    function r(n,v,b,ind){return '<div class="r '+(b?'b':'')+' '+(ind==1?'ind':ind==2?'ind2':'')+'" style="border-top:1px solid #000"><span>'+n+'</span><span>'+v+'</span></div>';}
+    return '<div class="usnf"><h3>Nutrition Facts</h3>'
+      + '<div class="r" style="font-size:12px">5 servings per container</div>'
+      + '<div class="r b">Serving size<span>1 cup (100g)</span></div>'
+      + '<div class="rule thick"></div><div class="r" style="font-size:11px">Amount per serving</div>'
+      + '<div class="r" style="align-items:flex-end"><span style="font-size:22px;font-weight:900">Calories</span><span style="font-size:26px;font-weight:900">420</span></div>'
+      + '<div class="rule mid"></div><div class="r" style="font-size:10px;justify-content:flex-end">% Daily Value*</div><div class="rule"></div>'
+      + r('Total Fat 13g','17%',1)+r('Saturated Fat 8g','40%',0,1)+r('Trans Fat 0g','',0,1)
+      + r('Cholesterol 0mg','0%',1)+r('Sodium 890mg','39%',1)+r('Total Carbohydrate 60g','22%',1)
+      + r('Dietary Fiber 5g','18%',0,1)+r('Total Sugars 3g','',0,1)+r('Includes 3g Added Sugars','6%',0,2)
+      + r('Protein 16g','',1)+'<div class="rule thick"></div>'
+      + r('Vitamin D 0mcg','0%',0)+r('Calcium 60mg','4%',0)+r('Iron 2mg','10%',0)+r('Potassium 350mg','8%',0)
+      + '<div class="rule"></div><div class="sm" style="margin-top:4px">* The % Daily Value (DV) tells you how much a nutrient in a serving of food contributes to a daily diet. 2,000 calories a day is used for general nutrition advice.</div></div>';
+  }
+  function nfCA(){
+    function r(n,v,b,ind){return '<div class="r '+(b?'b':'')+' '+(ind?'ind':'')+'" style="border-top:1px solid #000"><span>'+n+'</span><span>'+v+'</span></div>';}
+    return '<div class="usnf"><h3 style="font-size:20px">Nutrition Facts</h3><div style="font-size:13px;font-weight:800;border-bottom:1px solid #000">Valeur nutritive</div>'
+      + '<div class="r" style="font-size:11px">Per 100 g / pour 100 g</div><div class="rule mid"></div>'
+      + '<div class="r b" style="align-items:flex-end"><span>Calories 420</span><span style="font-size:10px;font-weight:800">% Daily Value*<br>% valeur quotidienne*</span></div><div class="rule"></div>'
+      + r('Fat / Lipides 13 g','17%',1)+r('Saturated / saturés 8 g','40%',0,1)+r('+ Trans / trans 0 g','',0,1)
+      + r('Carbohydrate / Glucides 60 g','',1)+r('Fibre / Fibres 5 g','18%',0,1)+r('Sugars / Sucres 3 g','3%',0,1)
+      + r('Protein / Protéines 16 g','',1)+r('Cholesterol / Cholestérol 0 mg','',1)+r('Sodium 890 mg','39%',1)
+      + '<div class="rule thick"></div><div class="sm" style="margin-top:4px">*5% or less is a little, 15% or more is a lot / 5% ou moins c’est peu, 15% ou plus c’est beaucoup.</div></div>';
+  }
+
+  /* ---------- label card per country ---------- */
+  function cardHTML(cc){
+    if(cc==='US') return cardUS();
+    if(cc==='CA') return cardCA();
+    return cardIN();
+  }
+  function dr(id,k,v){ return '<div class="el declrow" data-el="'+id+'"><div class="k">'+k+'</div><div class="v">: '+(v||'&nbsp;')+'</div></div>'; }
+
+  function cardIN(){
     return '<div class="art">'
     + '<div class="el" data-el="brandlogo"><div class="brandlogo">Brand logo</div></div>'
-    + '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px">'
-    +   '<div class="el pname" data-el="name" style="flex:1">Tender Coconut Frosty Fusion Ice Cream</div>'
-    +   '<div class="el" data-el="veg" style="display:flex;gap:6px"><span class="vlogo"><i></i></span><span class="nlogo"><i></i></span></div>'
-    + '</div>'
-    + '<div class="el" data-el="illustrative" style="font-size:12px;color:#444;margin-top:14px">Images are shown for illustrative purpose only</div>'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px"><div class="el pname" data-el="name" style="flex:1">'+PRODUCT+'</div><div class="el" data-el="veg" style="display:flex;gap:6px"><span class="vlogo"><i></i></span></div></div>'
     + '<hr style="border:0;border-top:1px solid #E4E6EA;margin:14px 0">'
-    + '<div class="el" data-el="ingredients" style="font-size:12.5px;line-height:1.6"><b>Ingredients:</b> Milk, Milk Solids, Sugar, Tender Coconut Preparation (9%) [Tender Coconut Bits, Sugar, Tender Coconut Water, Stabilizer (INS 440, INS 410), Acidity Regulator (INS 330)], Liquid glucose, Emulsifier (INS 471), Stabilizer (INS 410, INS 412, INS 407)</div>'
-    + '<div class="el" data-el="allergens" style="font-size:12.5px;margin-top:12px"><b>Allergens:</b> &nbsp;&nbsp;<b>Contains</b> Milk</div>'
-    + '<div class="el" data-el="nutrition" style="margin-top:14px">'+nfHTML()+'</div>'
+    + '<div class="el" data-el="ingredients" style="font-size:12.5px;line-height:1.6"><b>Ingredients:</b> '+INGREDIENTS+'</div>'
+    + '<div class="el" data-el="allergens" style="font-size:12.5px;margin-top:12px"><b>Allergens:</b> &nbsp;<b>Contains</b> Wheat (from Amchur blend). May contain Milk, Tree Nuts.</div>'
+    + '<div class="el" data-el="nutrition" style="margin-top:14px">'+nfIN()+'</div>'
     + '<div class="el" data-el="nifoot" style="font-size:11px;color:#333;margin-top:8px">#Recommended Dietary Allowance (RDA) per serve is calculated on the basis of 2000 kcal energy for an average adult.<br>*Average Values</div>'
-    + '<div class="el" data-el="mfd" style="display:flex;justify-content:space-between;gap:14px;margin-top:16px">'
-    +   '<div style="font-size:12px;line-height:1.5"><b>Manufactured and Marketed By :</b> Milky Mist Dairy Food Limited, SF No 43/1-4, Pattakaranpalayam Village, Perundurai Taluk, Erode, Tamil Nadu, 638057, India</div>'
-    +   '<div style="flex-shrink:0;text-align:center"><div class="ghost" style="width:96px;height:40px">FSSAI logo</div><div style="font-size:10px;margin-top:3px">Lic No. : 10017042003191</div></div>'
-    + '</div>'
-    + '<div class="el" data-el="consumer" style="font-size:12px;margin-top:14px">For any Complaints or feedback, Please contact Customer Care Executive at Marketed by Address or call: 18004199000, or email at customercare@milkymist.com</div>'
-    + '<div class="declbox" style="margin-top:18px">'
-    +   dr('netq','Net Quantity','1 L (550 g)')
-    +   dr('mrp','MRP (inclusive of all taxes)','₹')
-    +   dr('usp','USP','₹ /')
-    +   dr('batch','Batch Number','')
-    +   dr('pkgdate','Date of Packaging','')
-    +   dr('expiry','Date of Expiry','')
-    + '</div>'
-    + '<div class="el" data-el="storage" style="font-size:12.5px;margin-top:16px"><b>Storage Instructions :</b><br>ALWAYS KEEP FROZEN AT -18°C OR BELOW</div>'
-    + '<div class="el" data-el="packsym" style="display:flex;gap:12px;justify-content:flex-end;margin-top:18px"><div class="ghost" style="width:52px;height:52px">05 PP</div><div class="ghost" style="width:150px;height:52px">Barcode 8904083320104</div></div>'
+    + '<div class="el" data-el="mfd" style="display:flex;justify-content:space-between;gap:14px;margin-top:16px"><div style="font-size:12px;line-height:1.5"><b>Marketed by :</b> '+BRAND+', '+ADDR+'<br><b>Mfd. by :</b> [Co-manufacturer Pvt. Ltd.], [Unit address, City, State – PIN]</div><div style="flex-shrink:0;text-align:center"><div class="ghost" style="width:96px;height:40px">FSSAI logo</div><div style="font-size:10px;margin-top:3px">Lic No. : [14-digit lic. no.]</div></div></div>'
+    + '<div class="el" data-el="consumer" style="font-size:12px;margin-top:14px">For feedback / customer complaints, write (indicating Batch No. and Mfg. date) to the Consumer Service Manager, '+CARE_EMAIL+', '+CARE_PHONE+'.</div>'
+    + '<div class="declbox" style="margin-top:18px">'+dr('netq','Net Quantity','500 g')+dr('mrp','MRP (inclusive of all taxes)','₹')+dr('usp','USP (per g)','₹ /g')+dr('batch','Batch Number','')+dr('pkgdate','Date of Packaging','')+dr('expiry','Best Before','')+'</div>'
+    + '<div class="el" data-el="storage" style="font-size:12.5px;margin-top:16px"><b>Storage Instructions :</b><br>'+STORAGE+'</div>'
+    + '<div class="el" data-el="packsym" style="display:flex;gap:12px;justify-content:flex-end;margin-top:18px"><div class="ghost" style="width:52px;height:52px">07 OTHER</div><div class="ghost" style="width:150px;height:52px">Barcode 8904083320104</div></div>'
     + '</div>';
   }
-  function dr(id,k,v){ return '<div class="el declrow" data-el="'+id+'"><div class="k">'+k+'</div><div class="v">: '+ (v||'&nbsp;') +'</div></div>'; }
-  function nfHTML(){
-    var rows=[['Energy (kcal)','217','217','11'],['Total Carbohydrate (g)','21.9','21.9','-'],['Total Sugars (g)','21.7','21.7','-'],['Added Sugars (g)','15.7','15.7','31'],['Protein (g)','3.6','3.6','7'],['Total Fat (g)','12.8','12.8','19'],['Saturated Fat (g) (not more than)','7.6','7.6','35'],['Trans Fat (g) (not more than)','0.20','0.20','10'],['Cholesterol (mg)','33.7','33.7','-'],['Sodium (mg)','58.3','58.3','3'],['Calcium (mg)','117.8','117.8','12']];
-    return '<div class="nf">'
-      + '<div class="hd">Nutritional Information</div>'
-      + '<div class="sv"><span>No of Servings (approx.) : 10</span><span>Serving Size : 100 ml (55 g)</span></div>'
-      + '<table><tr><th>Nutrients</th><th class="n">Per 100 ml</th><th class="n">Per Serve</th><th class="n">%RDA/Serve</th></tr>'
-      + rows.map(function(r){return '<tr><td>'+r[0]+'</td><td class="n">'+r[1]+'</td><td class="n">'+r[2]+'</td><td class="n">'+r[3]+'</td></tr>';}).join('')
-      + '</table>'
-      + '<div class="ft">RDA of an average adult, NIN, ICMR, 2020</div>'
-      + '</div>';
+  function cardUS(){
+    return '<div class="art">'
+    + '<div class="el" data-el="brandlogo"><div class="brandlogo">Brand logo</div></div>'
+    + '<div class="el pname" data-el="name" style="margin-top:16px">'+PRODUCT+'</div>'
+    + '<div style="font-size:12px;color:#444;margin-top:4px">Roasted foxnuts (makhana) with tangy tomato seasoning</div>'
+    + '<hr style="border:0;border-top:1px solid #E4E6EA;margin:14px 0">'
+    + '<div class="el" data-el="nutrition">'+nfUS()+'</div>'
+    + '<div class="el" data-el="ingredients" style="font-size:12.5px;line-height:1.6;margin-top:14px"><b>INGREDIENTS:</b> '+INGREDIENTS+'</div>'
+    + '<div class="el" data-el="allergens" style="font-size:12.5px;margin-top:12px"><b>CONTAINS:</b> Wheat. May contain Milk, Tree Nuts.</div>'
+    + '<div class="el" data-el="coo" style="font-size:12.5px;margin-top:14px;font-weight:700">Product of India</div>'
+    + '<div class="el" data-el="mfd" style="font-size:12px;line-height:1.5;margin-top:10px"><b>Manufactured by:</b> '+BRAND+', '+ADDR+'<br><b>Distributed by:</b> [US Distributor Inc.], [Street, City, State ZIP, USA]</div>'
+    + '<div class="el" data-el="consumer" style="font-size:12px;margin-top:12px">Questions or comments? '+CARE_EMAIL+' · '+CARE_PHONE+'</div>'
+    + '<div class="el" data-el="netq" style="font-size:16px;font-weight:800;text-align:center;margin-top:20px">Net Wt. 17.64 oz (1 lb 1.64 oz) (500 g)</div>'
+    + '</div>';
+  }
+  function cardCA(){
+    return '<div class="art">'
+    + '<div class="el" data-el="brandlogo"><div class="brandlogo">Brand logo</div></div>'
+    + '<div class="el pname" data-el="name" style="margin-top:16px">'+PRODUCT+'<br><span style="font-size:17px;font-weight:700">Makhana à la tomate piquante</span></div>'
+    + '<hr style="border:0;border-top:1px solid #E4E6EA;margin:14px 0">'
+    + '<div class="el" data-el="nutrition">'+nfCA()+'</div>'
+    + '<div class="el" data-el="ingredients" style="font-size:12.5px;line-height:1.6;margin-top:14px"><b>Ingredients:</b> '+INGREDIENTS+'<br><i>'+INGREDIENTS_FR+'</i></div>'
+    + '<div class="el" data-el="allergens" style="font-size:12.5px;margin-top:12px"><b>Contains / Contient:</b> Wheat / Blé.</div>'
+    + '<div class="el" data-el="coo" style="font-size:12.5px;margin-top:14px;font-weight:700">Product of India / Produit de l’Inde</div>'
+    + '<div class="el" data-el="mfd" style="font-size:12px;line-height:1.5;margin-top:10px"><b>Manufactured by / Fabriqué par:</b> '+BRAND+', '+ADDR+'<br><b>Imported by / Importé par:</b> [Canadian Importer Ltd.], [Street, City, Province Postal code, Canada]</div>'
+    + '<div class="el" data-el="consumer" style="font-size:12px;margin-top:12px">For feedback, write to '+CARE_EMAIL+' · '+CARE_PHONE+'<br><i>Pour toute rétroaction, écrivez à '+CARE_EMAIL+'</i></div>'
+    + '<div class="el" data-el="netq" style="font-size:15px;font-weight:800;text-align:center;margin-top:18px">Net weight: 500 g&nbsp;&nbsp;/&nbsp;&nbsp;Poids net : 500 g</div>'
+    + '</div>';
   }
 
-  var NOTE_BULLETS = [
+  var NOTE_BULLETS=[
     'This is a regulatory label specification sheet and does not represent the actual label design or layout.',
-    'The name of the product, brand name and veg/non-veg logo must appear prominently on the front of pack.',
-    'In the Nutritional Information (NI) table, users may choose to retain either the “per 100g/ml” column or the “per serve” column, as providing nutritional information for either per 100g/ml or per single consumption pack is mandatory.',
-    'For foods with a shelf life of seven days or less, the ‘date of manufacture’ is not required on the label. However, the ‘Expiry/Use by’ date must be clearly mentioned.',
-    'Please ensure the net quantity declaration has clear space around it - equal to the height of the numeral above and below, and at least twice the height on the left and right.',
-    'Lab-tested nutritional values are recommended, especially for claims and final labelling. Theoretical values may be used for product development, internal assessments, or in combination with lab data. Results can vary due to ingredient variability and processing effects. The final responsibility rests with the user (food manufacturer). We recommend validating values through lab testing before final use.'
+    'The name of the product, brand name and (for India) veg/non-veg logo must appear prominently on the front of pack.',
+    'In the Nutritional Information table, either the “per 100 g/ml” or the “per serve” column must be shown.',
+    'Please ensure the net quantity declaration has clear space around it — equal to the height of the numeral above and below, and at least twice the height on the left and right.',
+    'Lab-tested nutritional values are recommended, especially for claims and final labelling. The final responsibility rests with the food manufacturer. We recommend validating values through lab testing before final use.'
   ];
 
-  /* ---------------- shell ---------------- */
+  /* ---------- shell ---------- */
   function shell(){
+    var tabs=['IN','US','CA'].map(function(c){ return '<button class="t'+(S.cc===c?' on':'')+'" data-cc="'+c+'" type="button">'+FLAGS[c]+c+'</button>'; }).join('');
     return '<div class="lp" id="lpOverlay">'
-    + '<div class="lp-head">'
-    +   '<h1>Label Preview</h1>'
-    +   '<span class="prod">Tender Coconut Frosty Fusion Ice Cream · 1 L</span>'
+    + '<div class="lp-head"><h1>Label Preview</h1><span class="prod" id="prodName"></span><div class="tabs" id="ccTabs">'+tabs+'</div><div class="lp-spacer"></div>'
     +   '<button class="hbtn" id="tgFont" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h16v2M9 5v14M7 19h4"/><path d="M14 13h6M14 13v6M20 13v6"/></svg>Font heights</button>'
-    +   '<button class="hbtn dark" id="tgComment" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Comment</button>'
-    +   '<span class="divv"></span>'
-    +   '<button class="lp-x" id="lpClose" type="button" aria-label="Close">×</button>'
-    + '</div>'
+    +   '<button class="hbtn" id="tgComment" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Comment</button>'
+    +   '<span class="divv"></span><button class="lp-x" id="lpClose" type="button" aria-label="Close">×</button></div>'
     + '<div class="lp-cbar" id="cbar" style="display:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5C3300" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span><b>Comment mode is on.</b> Click + beside any element to pin a comment to it.</span><button class="done" id="cbarDone" type="button">Done</button></div>'
-    + '<div class="lp-body">'
-    +   '<div class="lp-scroll">'
-    +     '<div class="lp-stage" id="stage">'
-    +       '<div class="lp-addcol" id="addcol"></div>'
-    +       '<div class="lp-card" id="card">'+cardHTML()+'</div>'
-    +       '<div class="lp-callcol" id="callcol"></div>'
-    +     '</div>'
-    +     '<div class="reg-note"><ul style="margin:0;padding-left:18px">'+NOTE_BULLETS.map(function(b){return '<li>'+b+'</li>';}).join('')+'</ul></div>'
-    +   '</div>'
-    +   '<aside class="lp-panel">'
-    +     '<div class="lp-tabs">'
-    +       '<button class="lp-tab on" data-tab="comments" type="button">Comments <span class="cnt" id="ccount">0</span></button>'
-    +       '<button class="lp-tab" data-tab="guidelines" type="button">Guidelines</button>'
-    +     '</div>'
-    +     '<div class="lp-pbody" id="pbody"></div>'
-    +   '</aside>'
-    + '</div>'
-    + '</div>'
+    + '<div class="lp-body"><div class="lp-scroll"><div class="lp-stage" id="stage"><div class="lp-addcol" id="addcol"></div><div class="lp-card" id="card"></div><div class="lp-callcol" id="callcol"></div></div>'
+    +   '<div class="reg-note"><ul style="margin:0;padding-left:18px">'+NOTE_BULLETS.map(function(b){return '<li>'+b+'</li>';}).join('')+'</ul></div></div>'
+    +   '<aside class="lp-panel"><div class="lp-tabs"><button class="lp-tab on" data-tab="comments" type="button">Comments <span class="cnt" id="ccount">0</span></button><button class="lp-tab" data-tab="guidelines" type="button">Guidelines</button></div><div class="lp-pbody" id="pbody"></div></aside>'
+    + '</div></div>'
     + '<div class="scrim" id="repScrim"><div class="rbar"><h2>Download preview — Label Specification Sheet</h2><button class="rdl" id="repDl" type="button">Download PDF</button><button class="x" id="repX" type="button">×</button></div><div class="rpages" id="rpages"></div></div>';
   }
 
-  /* ---------------- panel: comments / guidelines ---------------- */
+  /* ---------- panel ---------- */
+  function visibleComments(){ return S.comments.filter(function(c){return c.cc===S.cc;}); }
   function panel(){
     if(S.tab==='guidelines') return guidelinesHTML();
-    var n = S.comments.length;
-    var draft = S.draft ? draftHTML() : '';
-    var list = S.comments.slice().sort(function(a,b){return a.no-b.no;}).map(cmtHTML).join('');
-    var dlNote = 'The download includes the font-height callouts beside each element and all '+n+' comment'+(n===1?'':'s')+': numbered pins on the label plus a Comments page at the end.';
+    var mine=visibleComments(), n=mine.length;
+    var draft=S.draft?draftHTML():'';
+    var list=mine.slice().sort(function(a,b){return a.no-b.no;}).map(cmtHTML).join('');
+    var dlNote='The download includes the font-height callouts beside each element'+(n?' and all '+n+' comment'+(n===1?'':'s')+': numbered pins on the label plus a Comments page at the end.':'.');
     return draft
       + '<div class="clist-h"><span class="t">'+n+' comment'+(n===1?'':'s')+'</span><span class="r">For documentation · nothing to resolve</span></div>'
       + (list||'<div class="r" style="color:#8A93A6;font-size:13px;padding:10px 0">No comments yet. Turn on Comment mode and click + beside an element.</div>')
@@ -316,237 +386,195 @@ window.LabelPreview = (function(){
   }
   function draftHTML(){
     var d=S.draft, general=d.el==='general';
-    var tag = general
-      ? '<span class="ontag general">General comment</span>'
-      : '<span class="ontag">On '+EL_NAME[d.el]+'<button class="rx" id="draftGen" type="button" title="Make this a general comment">×</button></span>';
-    return '<div class="newc">'
-      + '<div class="nh"><span class="lab">NEW COMMENT</span>'+tag+'</div>'
+    var tag=general?'<span class="ontag general">General comment</span>':'<span class="ontag">On '+EL_NAME[d.el]+'<button class="rx" id="draftGen" type="button" title="Make this a general comment">×</button></span>';
+    return '<div class="newc"><div class="nh"><span class="lab">NEW COMMENT</span>'+tag+'</div>'
       + '<textarea id="draftText" placeholder="Write a note for the record…">'+esc(d.text)+'</textarea>'
-      + '<div class="foot"><span class="note">Shows as pin '+d.no+' on the label and in the download.</span>'
-      + '<button class="mini" id="draftCancel" type="button">Cancel</button>'
-      + '<button class="mini pri" id="draftSave" type="button"'+(d.text.trim()?'':' disabled')+'>Add comment</button></div>'
-      + '</div>';
+      + '<div class="foot"><span class="note">Shows as pin '+d.no+' on the label and in the download.</span><button class="mini" id="draftCancel" type="button">Cancel</button><button class="mini pri" id="draftSave" type="button"'+(d.text.trim()?'':' disabled')+'>Add comment</button></div></div>';
   }
   function cmtHTML(c){
-    var sel = S.sel===c.no;
-    var general = c.el==='general';
-    var acts = c.mine ? '<div class="acts"><button data-edit="'+c.no+'" type="button">Edit</button><button data-del="'+c.no+'" type="button">Delete</button></div>' : '';
-    return '<div class="cmt'+(sel?' sel':'')+'" data-cno="'+c.no+'">'
-      + '<div class="cno'+(general?' general':'')+'">'+c.no+'</div>'
-      + '<div><div class="top"><span class="en" data-focusel="'+c.el+'">'+(general?'General':EL_NAME[c.el])+'</span><span class="tm">'+c.time+'</span></div>'
-      + '<div class="bd">'+esc(c.text)+'</div>'
-      + '<div class="by">'+c.author+' · '+c.role+'</div>'+acts+'</div></div>';
+    var sel=S.sel===c.no, general=c.el==='general';
+    var acts=c.mine?'<div class="acts"><button data-edit="'+c.no+'" type="button">Edit</button><button data-del="'+c.no+'" type="button">Delete</button></div>':'';
+    return '<div class="cmt'+(sel?' sel':'')+'" data-cno="'+c.no+'"><div class="cno'+(general?' general':'')+'">'+c.no+'</div><div><div class="top"><span class="en" data-focusel="'+c.el+'">'+(general?'General':EL_NAME[c.el])+'</span><span class="tm">'+c.time+'</span></div><div class="bd">'+esc(c.text)+'</div><div class="by">'+c.author+' · '+c.role+'</div>'+acts+'</div></div>';
   }
   function guidelinesHTML(){
-    return '<div class="gtab">'
-      + '<h3>LM Guidelines</h3>'
-      + '<div class="gt"><div class="gr" style="grid-template-columns:1fr 150px"><div class="gc hd">PDP Area (sq.cm.)</div><div class="gc">'+PDP.lm+'</div></div></div>'
-      + '<div class="gt">'
-      +   '<div class="gr hd" style="grid-template-columns:1fr 120px 150px"><div class="gc">Text / numeral height under LM</div><div class="gc">Min. ht (mm)</div><div class="gc">Moulded (mm)</div></div>'
-      +   '<div class="gr" style="grid-template-columns:1fr 120px 150px"><div class="gc lm-k">Net Quantity, Retail Sale Price (Rs.), Date of Expiry / Mfd / Best Before / Use by, Consumer Care</div><div class="gc">2.5</div><div class="gc">4</div></div>'
-      +   '<div class="gr" style="grid-template-columns:1fr 120px 150px"><div class="gc lm-k">USP</div><div class="gc">1.25</div><div class="gc">2</div></div>'
-      + '</div>'
+    if(S.cc==='US') return '<div class="gtab"><h3>US — Font &amp; size rules</h3>'
+      + gtbl([['Element','Minimum height','Basis'],['Statement of identity','½ the largest print','21 CFR 101.3'],['Net quantity (PDP)','1/16″–1/2″ by PDP area','FPLA / 21 CFR 101.7'],['Ingredients','1/16″ (1.6 mm)','21 CFR 101.4'],['“Contains” allergens','1/16″','FALCPA'],['Nutrition Facts','Calories 5.64 mm, values 2.12 mm','21 CFR 101.9(d)'],['Firm name &amp; address','1/16″','21 CFR 101.5'],['Country of origin','conspicuous','19 CFR 134']],'1fr 150px 160px')
+      + '<div class="r" style="color:#6B6A68;font-size:12px">No FSSAI licence number or Indian veg/non-veg logo is required on US labels.</div></div>';
+    if(S.cc==='CA') return '<div class="gtab"><h3>Canada — Font &amp; size rules</h3>'
+      + gtbl([['Element','Minimum height','Basis'],['Common name','1.6 mm','FDR B.01.001'],['Net quantity (metric)','1.6 mm','SFCR'],['List of ingredients','1.6 mm','FDR B.01.008'],['“Contains / Contient”','1.6 mm, bold','FDR B.01.010.1'],['Nutrition Facts / Valeur nutritive','prescribed table format','FDR B.01.401'],['Dealer name &amp; address','1.6 mm','SFCR'],['Country of origin / pays d’origine','conspicuous','SFCR']],'1fr 150px 160px')
+      + '<div class="r" style="color:#6B6A68;font-size:12px">Canadian labels are bilingual (English / French). No FSSAI licence number is required.</div></div>';
+    // India
+    return '<div class="gtab"><h3>LM Guidelines</h3>'
+      + gtbl([['PDP Area (sq.cm.)',PDP.IN.a.area]],'1fr 150px')
+      + gtbl([['Text / numeral height under LM','Min. ht (mm)','Moulded (mm)'],['Net Quantity, Retail Sale Price, Date of Expiry / Mfd / Best Before / Use by, Consumer Care','2.5','4'],['USP','1.25','2']],'1fr 120px 150px')
       + '<h3>FSSAI Guidelines</h3>'
-      + '<div class="gt"><div class="gr" style="grid-template-columns:1fr 150px"><div class="gc hd">PDP Area (sq.cm.)</div><div class="gc">'+PDP.fssai+'</div></div><div class="gr" style="grid-template-columns:1fr 150px"><div class="gc hd">Min PDP Area for FSSAI compliance</div><div class="gc">184.9</div></div></div>'
-      + '<div class="gt">'
-      +   '<div class="gr hd" style="grid-template-columns:1fr 120px 150px"><div class="gc">Text / numeral height under FSSAI</div><div class="gc">Min. ht (mm)</div><div class="gc">Moulded (mm)</div></div>'
-      +   '<div class="gr" style="grid-template-columns:1fr 120px 150px"><div class="gc">Any text apart from Legal Metrology info (ingredient list, nutrition, manufactured by, storage, etc.)</div><div class="gc">2</div><div class="gc">4</div></div>'
-      +   '<div class="gr" style="grid-template-columns:1fr 120px 150px"><div class="gc">Mandatory Declarations</div><div class="gc">3</div><div class="gc">–</div></div>'
-      + '</div>'
-      + '<div class="gt">'
-      +   '<div class="gr hd" style="grid-template-columns:1fr 1fr 1fr 1fr"><div class="gc">Size of Logo</div><div class="gc">Circle ø (mm)</div><div class="gc">Triangle side (mm)</div><div class="gc">Square side (mm)</div></div>'
-      +   '<div class="gr" style="grid-template-columns:1fr 1fr 1fr 1fr"><div class="gc">Veg / Non-veg Logo</div><div class="gc">4</div><div class="gc">3.5</div><div class="gc">8</div></div>'
-      + '</div>'
+      + gtbl([['PDP Area (sq.cm.)',PDP.IN.b.area],['Min PDP Area for FSSAI compliance','184.9']],'1fr 150px')
+      + gtbl([['Text / numeral height under FSSAI','Min. ht (mm)','Moulded (mm)'],['Any text apart from Legal Metrology info (ingredient list, nutrition, manufactured by, storage, etc.)','2','4'],['Mandatory Declarations','3','–']],'1fr 120px 150px')
+      + gtbl([['Size of Logo','Circle ø (mm)','Triangle side (mm)','Square side (mm)'],['Veg / Non-veg Logo','4','3.5','8']],'1fr 1fr 1fr 1fr')
       + '</div>';
   }
+  function gtbl(rows,cols){
+    return '<div class="gt">'+rows.map(function(r,i){ return '<div class="gr'+(i===0?' hd':'')+'" style="grid-template-columns:'+cols+'">'+r.map(function(c){return '<div class="gc">'+c+'</div>';}).join('')+'</div>'; }).join('')+'</div>';
+  }
 
-  /* ---------------- gutters: + buttons, pins, callouts ---------------- */
+  /* ---------- gutters ---------- */
   function layoutGutters(){
     var card=document.getElementById('card'), addcol=document.getElementById('addcol'), callcol=document.getElementById('callcol');
     if(!card) return;
     var cr=card.getBoundingClientRect();
     addcol.innerHTML='';
-    callcol.innerHTML='<div class="callhdr" id="callhdrEl" style="position:absolute;left:0;top:0;width:244px">MIN. TEXT HEIGHT<div class="sub">LM on PDP '+PDP.lm+' cm² · FSSAI on PDP '+PDP.fssai+' cm² · moulded = blown, formed, moulded or perforated</div></div>';
-    var ids=Object.keys(CALL);
+    var cm=CALL[S.cc];
+    callcol.innerHTML= cm.name&&cm.name.tag ? '<div class="callhdr" style="position:absolute;left:0;top:0;width:244px">MIN. TEXT HEIGHT<div class="sub">'+callHdrSub()+'</div></div>' : '<div class="callhdr" style="position:absolute;left:0;top:0;width:244px">MIN. TEXT HEIGHT<div class="sub">'+callHdrSub()+'</div></div>';
+    var ids=Object.keys(cm);
     var items=ids.map(function(id){ var el=card.querySelector('.el[data-el="'+id+'"]'); return el?{id:id,y:Math.round(el.getBoundingClientRect().top-cr.top)}:null; }).filter(Boolean);
-    // left gutter: + buttons / pins at element top
     items.forEach(function(it){
       var id=it.id;
-      var existing=S.comments.filter(function(c){return c.el===id;})[0];
+      var existing=S.comments.filter(function(c){return c.cc===S.cc && c.el===id;})[0];
       if(existing){ var pin=document.createElement('div'); pin.className='pin'+(S.sel===existing.no?' sel':''); pin.style.top=it.y+'px'; pin.textContent=existing.no; pin.setAttribute('data-pinno',existing.no); addcol.appendChild(pin); }
       if(S.draft && S.draft.el===id){ var dp=document.createElement('div'); dp.className='pin dashed'; dp.style.top=it.y+'px'; dp.textContent=S.draft.no; addcol.appendChild(dp); }
       else { var ab=document.createElement('button'); ab.type='button'; ab.className='addbtn'; ab.style.top=it.y+'px'; ab.textContent='+'; ab.setAttribute('data-addel',id); addcol.appendChild(ab); }
     });
-    // right gutter callouts: de-collide downward, start below the header
     var GAP=46, cursor=66;
     items.forEach(function(it){
-      var c=CALL[it.id];
+      var c=cm[it.id];
       var y=Math.max(it.y, cursor); cursor=y+GAP;
       var r1 = c.min===null ? '<span class="nomin">No min. ht</span>'
-             : '<span class="mm">'+c.min+' mm</span><span class="tag '+c.tag.toLowerCase()+'">'+c.tag+'</span>';
+             : '<span class="mm">'+c.min+(/mm|½|format|conspicuous|legible|largest/.test(c.min)?'':' mm')+'</span>'+(c.tag?'<span class="tag '+c.cls+'">'+c.tag+'</span>':'');
       var r2txt = c.min===null ? c.note : (c.note + (c.mould?' · '+c.mould+' mm moulded':''));
       var call=document.createElement('div'); call.className='call'; call.style.top=y+'px';
       call.innerHTML='<div class="tick"></div><div class="ca"><div class="r1">'+r1+'</div><div class="r2">'+r2txt+'</div></div>';
       callcol.appendChild(call);
     });
-    // highlight the draft/selected element
+    // highlight
     card.querySelectorAll('.el.hl').forEach(function(n){n.classList.remove('hl');});
-    var hlId = S.draft ? S.draft.el : null;
-    if(hlId && hlId!=='general'){ var h=card.querySelector('.el[data-el="'+hlId+'"]'); if(h) h.classList.add('hl'); }
-    if(S.sel){ var sc=S.comments.filter(function(c){return c.no===S.sel;})[0]; if(sc && sc.el!=='general'){ var hh=card.querySelector('.el[data-el="'+sc.el+'"]'); if(hh) hh.classList.add('hl'); } }
+    var hlId=S.draft?S.draft.el:null;
+    if(hlId&&hlId!=='general'){ var h=card.querySelector('.el[data-el="'+hlId+'"]'); if(h) h.classList.add('hl'); }
+    if(S.sel){ var sc=S.comments.filter(function(c){return c.no===S.sel;})[0]; if(sc&&sc.el!=='general'){ var hh=card.querySelector('.el[data-el="'+sc.el+'"]'); if(hh) hh.classList.add('hl'); } }
+  }
+  function callHdrSub(){
+    if(S.cc==='IN') return 'LM on PDP '+PDP.IN.a.area+' cm² · FSSAI on PDP '+PDP.IN.b.area+' cm² · moulded = blown, formed, moulded or perforated';
+    if(S.cc==='US') return 'US · FDA 21 CFR / FPLA. Net-quantity height scales with the principal display panel area.';
+    return 'Canada · FDR / SFCR. Labels are bilingual (English / French).';
   }
 
-  /* ---------------- render ---------------- */
+  /* ---------- render ---------- */
   function renderPanel(){
-    document.getElementById('pbody').innerHTML = panel();
-    document.getElementById('ccount').textContent = S.comments.length;
+    document.getElementById('pbody').innerHTML=panel();
+    document.getElementById('ccount').textContent=visibleComments().length;
     document.querySelectorAll('.lp-tab').forEach(function(t){ t.classList.toggle('on', t.getAttribute('data-tab')===S.tab); });
     var ov=document.getElementById('lpOverlay');
     ov.classList.toggle('commenting', S.comment);
     ov.classList.toggle('showcall', S.fontHeights);
   }
-  function renderAll(){ renderPanel(); requestAnimationFrame(layoutGutters); }
-
+  function renderCountry(){
+    document.getElementById('card').innerHTML=cardHTML(S.cc);
+    document.getElementById('prodName').textContent=PRODUCT+' · '+CNAME[S.cc];
+    document.querySelectorAll('#ccTabs .t').forEach(function(t){ t.classList.toggle('on', t.getAttribute('data-cc')===S.cc); });
+  }
+  function renderAll(){ renderCountry(); renderPanel(); requestAnimationFrame(layoutGutters); }
   function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-  /* ---------------- interactions ---------------- */
+  /* ---------- interactions ---------- */
   function wire(){
-    var ov=document.getElementById('lpOverlay');
     document.getElementById('lpClose').addEventListener('click', close);
     var tgF=document.getElementById('tgFont'), tgC=document.getElementById('tgComment');
     tgF.classList.toggle('on', S.fontHeights);
     tgF.addEventListener('click', function(){ S.fontHeights=!S.fontHeights; tgF.classList.toggle('on',S.fontHeights); renderAll(); });
     tgC.addEventListener('click', function(){ setComment(!S.comment); });
     document.getElementById('cbarDone').addEventListener('click', function(){ setComment(false); });
-
+    document.getElementById('ccTabs').addEventListener('click', function(e){ var t=e.target.closest('.t'); if(!t) return; S.cc=t.getAttribute('data-cc'); S.sel=null; S.draft=null; renderAll(); });
     document.querySelector('.lp-tabs').addEventListener('click', function(e){ var t=e.target.closest('.lp-tab'); if(!t) return; S.tab=t.getAttribute('data-tab'); renderAll(); });
-
-    // add buttons (event delegation on addcol)
     document.getElementById('addcol').addEventListener('click', function(e){
       var add=e.target.closest('[data-addel]'); if(add){ startDraft(add.getAttribute('data-addel')); return; }
       var pin=e.target.closest('[data-pinno]'); if(pin){ selectComment(parseInt(pin.getAttribute('data-pinno'),10)); }
     });
-
-    // panel interactions
-    document.getElementById('pbody').addEventListener('click', function(e){
+    var pb=document.getElementById('pbody');
+    pb.addEventListener('click', function(e){
       if(e.target.closest('#draftGen')){ S.draft.el='general'; renderAll(); return; }
       if(e.target.closest('#draftCancel')){ S.draft=null; renderAll(); return; }
       if(e.target.closest('#draftSave')){ saveDraft(); return; }
       var ed=e.target.closest('[data-edit]'); if(ed){ editComment(parseInt(ed.getAttribute('data-edit'),10)); return; }
       var del=e.target.closest('[data-del]'); if(del){ delComment(parseInt(del.getAttribute('data-del'),10)); return; }
       var fe=e.target.closest('[data-focusel]'); if(fe){ focusEl(fe.getAttribute('data-focusel')); return; }
+      if(e.target.closest('#btnDownload')){ openReport(); return; }
       var card=e.target.closest('.cmt'); if(card){ selectComment(parseInt(card.getAttribute('data-cno'),10)); }
     });
-    document.getElementById('pbody').addEventListener('input', function(e){
-      if(e.target.id==='draftText'){ S.draft.text=e.target.value; var b=document.getElementById('draftSave'); if(b){ b.disabled=!e.target.value.trim(); } }
-      if(e.target.id==='ac1'||e.target.id==='ac2'){ syncAccept(); }
-    });
-    document.getElementById('pbody').addEventListener('change', function(e){ if(e.target.id==='ac1'||e.target.id==='ac2') syncAccept(); });
-    document.getElementById('pbody').addEventListener('click', function(e){ if(e.target.closest('#btnDownload')) openReport(); });
-
+    pb.addEventListener('input', function(e){ if(e.target.id==='draftText'){ S.draft.text=e.target.value; var b=document.getElementById('draftSave'); if(b) b.disabled=!e.target.value.trim(); } });
+    pb.addEventListener('change', function(e){ if(e.target.id==='ac1'||e.target.id==='ac2') syncAccept(); });
     document.getElementById('repX').addEventListener('click', function(){ document.getElementById('repScrim').classList.remove('open'); });
     document.getElementById('repDl').addEventListener('click', function(){ window.print(); });
     document.getElementById('repScrim').addEventListener('click', function(e){ if(e.target.id==='repScrim') e.currentTarget.classList.remove('open'); });
-
     window.addEventListener('resize', function(){ requestAnimationFrame(layoutGutters); });
-    document.querySelector('.lp-scroll').addEventListener('scroll', function(){ /* callouts move with content (same scroll container) */ });
   }
-
-  function setComment(on){ S.comment=on; if(!on){ S.draft=null; } document.getElementById('cbar').style.display=on?'flex':'none'; var t=document.getElementById('tgComment'); t.classList.toggle('on',on); renderAll(); }
-  function startDraft(elId){ S.tab='comments'; S.sel=null; S.draft={ el:elId, text:'', no:S.nextNo }; renderAll(); var ta=document.getElementById('draftText'); if(ta) ta.focus(); }
-  function saveDraft(){ var d=S.draft; if(!d||!d.text.trim()) return; S.comments.push({ no:S.nextNo++, el:d.el, text:d.text.trim(), author:'Meera K.', role:'you', time:nowStr(), mine:true }); S.draft=null; S.sel=S.nextNo-1; renderAll(); }
-  function editComment(no){ var c=S.comments.filter(function(x){return x.no===no;})[0]; if(!c) return; S.draft={ el:c.el, text:c.text, no:c.no, editing:true }; S.comments=S.comments.filter(function(x){return x.no!==no;}); renderAll(); var ta=document.getElementById('draftText'); if(ta) ta.focus(); }
+  function setComment(on){ S.comment=on; if(!on) S.draft=null; document.getElementById('cbar').style.display=on?'flex':'none'; document.getElementById('tgComment').classList.toggle('on',on); renderAll(); }
+  function startDraft(elId){ S.tab='comments'; S.sel=null; S.draft={el:elId,text:'',no:S.nextNo}; renderAll(); var ta=document.getElementById('draftText'); if(ta) ta.focus(); }
+  function saveDraft(){ var d=S.draft; if(!d||!d.text.trim()) return; S.comments.push({no:S.nextNo++, cc:S.cc, el:d.el, text:d.text.trim(), author:'Meera K.', role:'you', time:nowStr(), mine:true}); S.draft=null; S.sel=S.nextNo-1; renderAll(); }
+  function editComment(no){ var c=S.comments.filter(function(x){return x.no===no;})[0]; if(!c) return; S.draft={el:c.el,text:c.text,no:c.no}; S.comments=S.comments.filter(function(x){return x.no!==no;}); renderAll(); var ta=document.getElementById('draftText'); if(ta) ta.focus(); }
   function delComment(no){ S.comments=S.comments.filter(function(x){return x.no!==no;}); if(S.sel===no) S.sel=null; renderAll(); }
-  function selectComment(no){ S.sel=(S.sel===no?null:no); S.tab='comments'; renderAll(); var el=document.querySelector('.cmt[data-cno="'+no+'"]'); if(el) el.scrollIntoView({block:'nearest'}); var c=S.comments.filter(function(x){return x.no===no;})[0]; if(c&&c.el!=='general'){ var t=document.querySelector('.el[data-el="'+c.el+'"]'); if(t) t.scrollIntoView({block:'center',behavior:'smooth'}); } }
-  function focusEl(elId){ if(elId==='general') return; var t=document.querySelector('.el[data-el="'+elId+'"]'); if(t){ t.scrollIntoView({block:'center',behavior:'smooth'}); } }
-  function syncAccept(){ var a=document.getElementById('ac1'),b=document.getElementById('ac2'),d=document.getElementById('btnDownload'); if(a&&b&&d){ var ok=a.checked&&b.checked; d.disabled=!ok; } }
-  function nowStr(){ var d=new Date(); var h=d.getHours(),m=d.getMinutes(); var ap=h<12?'am':'pm'; h=h%12||12; return d.getDate()+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]+', '+h+':'+(m<10?'0':'')+m+' '+ap; }
+  function selectComment(no){ S.sel=(S.sel===no?null:no); S.tab='comments'; renderAll(); var c=S.comments.filter(function(x){return x.no===no;})[0]; if(c&&c.el!=='general'){ var t=document.querySelector('.el[data-el="'+c.el+'"]'); if(t) t.scrollIntoView({block:'center',behavior:'smooth'}); } }
+  function focusEl(elId){ if(elId==='general') return; var t=document.querySelector('.el[data-el="'+elId+'"]'); if(t) t.scrollIntoView({block:'center',behavior:'smooth'}); }
+  function syncAccept(){ var a=document.getElementById('ac1'),b=document.getElementById('ac2'),d=document.getElementById('btnDownload'); if(a&&b&&d) d.disabled=!(a.checked&&b.checked); }
+  function nowStr(){ var d=new Date(),h=d.getHours(),m=d.getMinutes(),ap=h<12?'am':'pm'; h=h%12||12; return d.getDate()+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]+', '+h+':'+(m<10?'0':'')+m+' '+ap; }
 
-  /* ---------------- download report (4 A4 pages) ---------------- */
-  function callMarkupFor(ids){
-    // returns right-margin callouts stacked (static) for the given element ids on a report page
-    return '<div class="rcall">'+ids.map(function(id){
-      var c=CALL[id]; if(!c) return '';
-      var r1 = c.min===null ? '<span class="nomin" style="font-family:monospace;font-weight:700;color:#56607A">No min. ht</span>'
-             : '<span class="mm" style="font-family:monospace;font-weight:800">'+c.min+' mm</span> <span class="tag '+c.tag.toLowerCase()+'">'+c.tag+'</span>';
-      var r2 = c.min===null ? c.note : (c.note+(c.mould?' · '+c.mould+' mm moulded':''));
-      return '<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:14px"><div style="width:14px;border-top:1.5px dotted #B9C0CD;margin-top:8px"></div><div><div style="font-size:11px">'+r1+'</div><div style="font-size:10.5px;color:#6B6A68">'+r2+'</div></div></div>';
-    }).join('')+'</div>';
-  }
+  /* ---------- download report ---------- */
   function openReport(){
-    var dt=reportDate();
-    var total=S.comments.length>0?4:3;
-    var legend='<div class="legend"><span class="lh">FONT-HEIGHT CALLOUTS</span> &nbsp; Minimum text height for each element, from the guidelines on page 3.<br>'
-      + '<span class="tag lm">LM</span> Legal Metrology · PDP '+PDP.lm+' cm² &nbsp;&nbsp; <span class="tag fssai">FSSAI</span> FSS (Labelling &amp; Display) Regs · PDP '+PDP.fssai+' cm²<br>'
-      + 'moulded = blown, formed, moulded or perforated on container &nbsp;&nbsp; <span style="display:inline-flex;width:16px;height:16px;border-radius:50%;background:#F5B800;color:#1B2230;font-size:10px;font-weight:800;align-items:center;justify-content:center;vertical-align:middle">1</span> Comment · see page '+total+'</div>';
-    function pinFor(id){ var c=S.comments.filter(function(x){return x.el===id;})[0]; return c?'<span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:#F5B800;color:#1B2230;font-size:11px;font-weight:800;align-items:center;justify-content:center;margin-right:6px;vertical-align:middle">'+c.no+'</span>':''; }
-    // Page 1 — label (brandlogo..consumer), Page 2 — declarations
-    var page1Ids=['brandlogo','name','veg','illustrative','ingredients','allergens','nutrition','nifoot','mfd','consumer'];
-    var page2Ids=['netq','mrp','usp','batch','pkgdate','expiry','storage','packsym'];
+    var cc=S.cc, cm=CALL[cc], dt=reportDate();
+    var pins=visibleComments();
+    var maxPage=Math.max.apply(null,Object.keys(cm).map(function(k){return cm[k].page||1;}));
+    var total=maxPage + 1 /*guidelines*/ + (pins.length?1:0);
+    function pinFor(id){ var c=pins.filter(function(x){return x.el===id;})[0]; return c?'<span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:#F5B800;color:#1B2230;font-size:11px;font-weight:800;align-items:center;justify-content:center;margin-right:6px;vertical-align:middle">'+c.no+'</span>':''; }
+    function callsFor(pageNo){ var ids=Object.keys(cm).filter(function(id){return (cm[id].page||1)===pageNo;}); return '<div>'+ids.map(function(id){var c=cm[id]; var r1=c.min===null?'<span style="font-family:monospace;font-weight:700;color:#56607A">No min. ht</span>':'<span style="font-family:monospace;font-weight:800">'+c.min+(/mm|½|format|conspicuous|legible|largest/.test(c.min)?'':' mm')+'</span> '+(c.tag?'<span class="tag '+c.cls+'">'+c.tag+'</span>':''); var r2=c.min===null?c.note:(c.note+(c.mould?' · '+c.mould+' mm moulded':'')); return '<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:14px"><div style="width:14px;border-top:1.5px dotted #B9C0CD;margin-top:8px"></div><div><div style="font-size:11px">'+r1+'</div><div style="font-size:10.5px;color:#6B6A68">'+r2+'</div></div></div>';}).join('')+'</div>'; }
+    var legend='<div class="legend"><span class="lh">FONT-HEIGHT CALLOUTS</span> &nbsp; Minimum text height for each element, from the guidelines on page '+(maxPage+1)+'.<br>'
+      + (cc==='IN'?'<span class="tag a">LM</span> Legal Metrology · PDP '+PDP.IN.a.area+' cm² &nbsp;&nbsp; <span class="tag b">FSSAI</span> FSS (Labelling &amp; Display) Regs · PDP '+PDP.IN.b.area+' cm²<br>moulded = blown, formed, moulded or perforated on container':callHdrSub())
+      + (pins.length?' &nbsp;&nbsp; <span style="display:inline-flex;width:16px;height:16px;border-radius:50%;background:#F5B800;color:#1B2230;font-size:10px;font-weight:800;align-items:center;justify-content:center;vertical-align:middle">1</span> Comment · see page '+total:'')+'</div>';
+    // insert pins into a rendered card
+    var tmp=document.createElement('div'); tmp.innerHTML=cardHTML(cc);
+    tmp.querySelectorAll('.el').forEach(function(n){ var id=n.getAttribute('data-el'); var c=pins.filter(function(x){return x.el===id;})[0]; if(c){ n.style.position='relative'; var p=document.createElement('span'); p.textContent=c.no; p.style.cssText='display:inline-flex;width:20px;height:20px;border-radius:50%;background:#F5B800;color:#1B2230;font-size:11px;font-weight:800;align-items:center;justify-content:center;margin-right:6px;vertical-align:middle'; n.insertBefore(p,n.firstChild); } });
     var html='';
-    html+=a4(legend
-      + '<div class="rstage"><div>'+reportLabelCol(page1Ids,pinFor)+'</div>'+callMarkupFor(page1Ids)+'</div>', 1, total, dt);
-    html+=a4('<div class="rstage"><div>'+reportDeclCol(page2Ids,pinFor)+'</div>'+callMarkupFor(page2Ids)+'</div>', 2, total, dt);
-    html+=a4(guidelinesReport(), 3, total, dt);
-    if(S.comments.length>0) html+=a4(commentsReport(dt), 4, total, dt);
+    for(var pg=1; pg<=maxPage; pg++){
+      var pageEls=Object.keys(cm).filter(function(id){return (cm[id].page||1)===pg;});
+      // build a page card showing only this page's elements
+      var frag=document.createElement('div'); frag.className='art'; frag.style.fontSize='12.5px';
+      pageEls.forEach(function(id){ var src=tmp.querySelector('.el[data-el="'+id+'"]'); if(src){ var clone=src.cloneNode(true); clone.style.marginTop='12px'; frag.appendChild(clone); } });
+      html+=a4((pg===1?legend:'')+'<div class="rstage"><div>'+frag.outerHTML+'</div>'+callsFor(pg)+'</div>', pg, total, dt, cc);
+    }
+    html+=a4('<div class="art">'+guidelinesHTML()+'</div>', maxPage+1, total, dt, cc);
+    if(pins.length) html+=a4(commentsReport(dt,cc,cm), total, total, dt, cc);
     document.getElementById('rpages').innerHTML=html;
-    document.getElementById('repScrim').classList.add('open');
-    document.getElementById('repScrim').scrollTop=0;
+    var sc=document.getElementById('repScrim'); sc.classList.add('open'); sc.scrollTop=0;
   }
-  function a4(inner,n,total,dt){ return '<div class="a4">'+inner+'<div class="pgfoot"><span>Tender Coconut Frosty Fusion Ice Cream</span><span>Page '+n+' of '+total+'</span><span>'+dt+'</span></div></div>'; }
-  function reportLabelCol(ids,pinFor){
-    return '<div class="art" style="font-size:12.5px">'
-      + '<div style="text-align:center"><div class="brandlogo">Brand logo</div></div>'
-      + '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px"><div class="pname" style="font-size:20px">'+pinName('name')+'Tender Coconut Frosty Fusion Ice Cream</div><div style="display:flex;gap:6px"><span class="vlogo"><i></i></span><span class="nlogo"><i></i></span></div></div>'
-      + '<div style="margin-top:12px;color:#444">Images are shown for illustrative purpose only</div>'
-      + '<div style="margin-top:12px">'+pinFor('ingredients')+'<b>Ingredients:</b> Milk, Milk Solids, Sugar, Tender Coconut Preparation (9%) [Tender Coconut Bits, Sugar, Tender Coconut Water, Stabilizer (INS 440, INS 410), Acidity Regulator (INS 330)], Liquid glucose, Emulsifier (INS 471), Stabilizer (INS 410, INS 412, INS 407)</div>'
-      + '<div style="margin-top:12px"><b>Allergens:</b> &nbsp;<b>Contains</b> Milk</div>'
-      + '<div style="margin-top:12px">'+pinFor('nutrition')+nfHTML()+'</div>'
-      + '<div style="margin-top:8px;font-size:11px">#Recommended Dietary Allowance (RDA) per serve is calculated on the basis of 2000 kcal energy for an average adult. *Average Values</div>'
-      + '<div style="margin-top:14px"><b>Manufactured and Marketed By :</b> Milky Mist Dairy Food Limited, SF No 43/1-4, Pattakaranpalayam Village, Perundurai Taluk, Erode, Tamil Nadu, 638057, India &nbsp;&nbsp; <span style="color:#555">Lic No. : 10017042003191</span></div>'
-      + '<div style="margin-top:12px">For any Complaints or feedback, Please contact Customer Care Executive at Marketed by Address or call: 18004199000, or email at customercare@milkymist.com</div>'
-      + '</div>';
-  }
-  function pinName(id){ var c=S.comments.filter(function(x){return x.el===id;})[0]; return c?'<span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:#F5B800;color:#1B2230;font-size:11px;font-weight:800;align-items:center;justify-content:center;margin-right:6px;vertical-align:middle">'+c.no+'</span>':''; }
-  function reportDeclCol(ids,pinFor){
-    var rows=[['netq','Net Quantity','1 L (550 g)'],['mrp','MRP (inclusive of all taxes)','₹'],['usp','USP','₹ /'],['batch','Batch Number',''],['pkgdate','Date of Packaging',''],['expiry','Date of Expiry','']];
-    return '<div class="art" style="font-size:12.5px">'
-      + '<div class="declbox">'+rows.map(function(r){return '<div class="declrow"><div class="k">'+pinFor(r[0])+r[1]+'</div><div class="v">: '+(r[2]||'&nbsp;')+'</div></div>';}).join('')+'</div>'
-      + '<div style="margin-top:14px">'+pinFor('storage')+'<b>Storage Instructions :</b><br>ALWAYS KEEP FROZEN AT -18°C OR BELOW</div>'
-      + '<div style="margin-top:16px;display:flex;gap:12px;justify-content:flex-end">'+pinFor('packsym')+'<div class="ghost" style="width:52px;height:52px">05 PP</div><div class="ghost" style="width:150px;height:52px">Barcode 8904083320104</div></div>'
-      + '</div>';
-  }
-  function guidelinesReport(){ return '<div class="art">'+guidelinesHTML().replace(/class="gtab"/,'class="gtab" style="font-family:Arial"')+'</div>'; }
-  function commentsReport(dt){
-    var rows=S.comments.slice().sort(function(a,b){return a.no-b.no;}).map(function(c){
+  function a4(inner,n,total,dt,cc){ return '<div class="a4">'+inner+'<div class="pgfoot"><span>'+PRODUCT+' · '+cc+'</span><span>Page '+n+' of '+total+'</span><span>'+dt+'</span></div></div>'; }
+  function commentsReport(dt,cc,cm){
+    var pins=visibleComments().slice().sort(function(a,b){return a.no-b.no;});
+    var rows=pins.map(function(c){
       var general=c.el==='general';
-      var pg = general?'Whole label':('Page '+(CALL[c.el]?CALL[c.el].page:1));
-      var nm = general?'General':EL_NAME[c.el];
-      var dot = general?'<span style="display:inline-flex;width:22px;height:22px;border-radius:50%;background:#fff;border:1.5px solid #C9CDD6;color:#56607A;font-size:12px;font-weight:800;align-items:center;justify-content:center">'+c.no+'</span>':'<span style="display:inline-flex;width:22px;height:22px;border-radius:50%;background:#F5B800;color:#1B2230;font-size:12px;font-weight:800;align-items:center;justify-content:center">'+c.no+'</span>';
-      return '<tr style="border-top:1px solid #E4E6EA"><td style="padding:12px 8px;vertical-align:top">'+dot+'</td><td style="padding:12px 8px;vertical-align:top"><b>'+nm+'</b><br><span style="color:#6B6A68;font-size:11px">'+pg+'</span></td><td style="padding:12px 8px;vertical-align:top">'+esc(c.text)+'</td><td style="padding:12px 8px;vertical-align:top">'+c.author+'<br><span style="color:#6B6A68;font-size:11px">'+c.role+'</span></td><td style="padding:12px 8px;vertical-align:top;white-space:nowrap">'+c.time.replace(', ',', ')+'</td></tr>';
+      var pg=general?'Whole label':('Page '+((cm[c.el]&&cm[c.el].page)||1));
+      var dot=general?'<span style="display:inline-flex;width:22px;height:22px;border-radius:50%;background:#fff;border:1.5px solid #C9CDD6;color:#56607A;font-size:12px;font-weight:800;align-items:center;justify-content:center">'+c.no+'</span>':'<span style="display:inline-flex;width:22px;height:22px;border-radius:50%;background:#F5B800;color:#1B2230;font-size:12px;font-weight:800;align-items:center;justify-content:center">'+c.no+'</span>';
+      return '<tr style="border-top:1px solid #E4E6EA"><td style="padding:12px 8px;vertical-align:top">'+dot+'</td><td style="padding:12px 8px;vertical-align:top"><b>'+(general?'General':EL_NAME[c.el])+'</b><br><span style="color:#6B6A68;font-size:11px">'+pg+'</span></td><td style="padding:12px 8px;vertical-align:top">'+esc(c.text)+'</td><td style="padding:12px 8px;vertical-align:top">'+c.author+'<br><span style="color:#6B6A68;font-size:11px">'+c.role+'</span></td><td style="padding:12px 8px;vertical-align:top;white-space:nowrap">'+c.time+'</td></tr>';
     }).join('');
-    return '<div class="art"><h2 style="margin:0 0 6px;font-size:22px">Comments</h2>'
-      + '<div style="color:#6B6A68;font-size:12px;margin-bottom:14px">'+S.comments.length+' comments added in FoLSol before download. Recorded for documentation only; they are not tracked or resolved. Numbered pins on pages 1–2 mark the element each comment refers to.</div>'
-      + '<table style="width:100%;border-collapse:collapse;font-size:12.5px"><tr style="text-align:left;border-bottom:2px solid #333"><th style="padding:8px">#</th><th style="padding:8px">Element</th><th style="padding:8px">Comment</th><th style="padding:8px">Added by</th><th style="padding:8px">Date &amp; time</th></tr>'+rows+'</table></div>';
+    return '<div class="art"><h2 style="margin:0 0 6px;font-size:22px">Comments</h2><div style="color:#6B6A68;font-size:12px;margin-bottom:14px">'+pins.length+' comments added in FoLSol before download. Recorded for documentation only; they are not tracked or resolved.</div><table style="width:100%;border-collapse:collapse;font-size:12.5px"><tr style="text-align:left;border-bottom:2px solid #333"><th style="padding:8px">#</th><th style="padding:8px">Element</th><th style="padding:8px">Comment</th><th style="padding:8px">Added by</th><th style="padding:8px">Date &amp; time</th></tr>'+rows+'</table></div>';
   }
-  function reportDate(){ var d=new Date(); var h=d.getHours(),m=d.getMinutes(),ap=h<12?'am':'pm'; h=h%12||12; return d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear()+', '+h+':'+(m<10?'0':'')+m+':00 '+ap; }
+  function reportDate(){ var d=new Date(),h=d.getHours(),m=d.getMinutes(),ap=h<12?'am':'pm'; h=h%12||12; return d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear()+', '+h+':'+(m<10?'0':'')+m+' '+ap; }
 
-  /* ---------------- open / close ---------------- */
-  function open(host){
+  /* ---------- open / close ---------- */
+  function open(host,cc){
     S.host=host||document.body;
-    S.comments=seed.map(function(c){return Object.assign({},c);});
-    S.nextNo=6; S.sel=null; S.draft=null; S.comment=false; S.fontHeights=true; S.tab='comments';
+    S.comments=seedComments(); S.nextNo=6; S.sel=null; S.draft=null; S.comment=false; S.fontHeights=true; S.tab='comments';
+    S.cc=(cc&&CALL[cc])?cc:'IN';
     var mount=document.createElement('div'); mount.id='lpMount'; mount.innerHTML=shell(); S.host.appendChild(mount);
     wire(); renderAll();
     document.documentElement.style.overflow='hidden';
   }
+  function setCountry(cc){ if(cc&&CALL[cc]){ S.cc=cc; S.sel=null; S.draft=null; if(document.getElementById('lpMount')) renderAll(); } }
   function close(){ var m=document.getElementById('lpMount'); if(m) m.remove(); document.documentElement.style.overflow=''; try{ if(window.parent && window.parent!==window) window.parent.postMessage('lp-close','*'); }catch(e){} }
 
-  return { open:open, close:close };
+  // allow parent (index_26) to set the country
+  window.addEventListener('message', function(e){ if(e.data && e.data.type==='lp-country') setCountry(e.data.cc); });
+
+  return { open:open, close:close, setCountry:setCountry };
 })();
 
-/* standalone page: open immediately */
-if(!window.__lpEmbed){ window.LabelPreview.open(document.getElementById('lpHost')); }
+if(!window.__lpEmbed){ window.LabelPreview.open(document.getElementById('lpHost'), (location.hash||'').replace('#','')||'IN'); }
 </script>
 </body>
 </html>
