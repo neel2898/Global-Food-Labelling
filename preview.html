@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Label Preview</title>
+<style>
+  :root{
+    --yellow:#FFD700; --blue:#2F80ED; --accent:#2456C9; --bg:#F5F9FF; --ink:#1B2230;
+    --muted:#56607A; --muted2:#3A4458; --line:#E2E6ED; --line2:#C9D3E3; --panel:#FFFFFF;
+    --soft:#F6F7F9; --soft2:#FAFBFC; --green:#1E7B3A; --red:#B42318;
+    --orange:#F2851E; --orange-bg:#FFF3E6; --orange-line:#F4A35A;
+    --gl:#1D5FD0; --gl-bg:#EAF1FF; --gl-line:#9DBDF5;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink)}
+  button{font-family:inherit;cursor:pointer}
+  /* ---------- top bar ---------- */
+  .pv-top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:16px;padding:12px 20px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 1px 3px rgba(20,32,60,.06)}
+  .pv-title{font-size:18px;font-weight:700;margin:0}
+  .pv-sub{font-size:12px;color:var(--muted)}
+  .pv-spacer{flex:1}
+  .tabs{display:inline-flex;gap:4px;padding:4px;background:#E3E9F2;border-radius:10px}
+  .tab{height:34px;padding:0 14px;display:flex;align-items:center;gap:8px;border:0;background:transparent;border-radius:7px;font-size:13px;font-weight:600;color:var(--muted)}
+  .tab.on{background:#fff;color:var(--ink);font-weight:700;box-shadow:0 1px 3px rgba(20,32,60,.14)}
+  .flag{width:20px;height:14px;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.14);display:inline-block}
+  /* toggle switch */
+  .tg{display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:600;color:var(--muted2);user-select:none}
+  .tg .sw{width:38px;height:22px;border-radius:999px;background:#CBD3E1;position:relative;transition:background .15s;flex-shrink:0}
+  .tg .sw::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:left .15s}
+  .tg.on .sw{background:var(--accent)}
+  .tg.on.gl .sw{background:var(--gl)}
+  .tg.on .sw::after{left:18px}
+  .tg.on{color:var(--ink)}
+  .btn-yellow{height:40px;padding:0 18px;background:var(--yellow);border:none;border-radius:8px;font-size:14px;font-weight:700;color:#1B2230;display:flex;align-items:center;gap:8px}
+  .btn-outline{height:38px;padding:0 14px;background:#fff;border:1.5px solid #29364D;border-radius:8px;font-size:13px;font-weight:600;color:#1B2230;display:inline-flex;align-items:center;gap:8px}
+  /* ---------- layout ---------- */
+  .pv-wrap{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;max-width:1260px;margin:0 auto;padding:22px 20px 60px}
+  .pv-canvas{display:flex;flex-direction:column;gap:22px;min-width:0}
+  .page-label{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.3px;margin:2px 0 -8px}
+  .page-label .bar{display:inline-block;width:30px;height:3px;border-radius:2px;background:var(--accent);vertical-align:middle;margin-right:8px}
+  .sheet{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 3px rgba(20,32,60,.07);padding:30px 34px;position:relative}
+  /* label artwork */
+  .art{font-family:Arial,Helvetica,sans-serif;color:#000}
+  .logo{width:66px;height:66px;border-radius:50%;border:1.5px solid #111;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;text-align:center;line-height:1.05;color:#333}
+  .veg{width:22px;height:22px;border:2px solid var(--green);display:flex;align-items:center;justify-content:center;border-radius:3px}
+  .veg i{width:10px;height:10px;border-radius:50%;background:var(--green);display:block}
+  .fop-name{font-size:30px;font-weight:800;letter-spacing:.2px}
+  .fop-desc{font-size:14px;color:#333;margin-top:4px}
+  .netq{font-size:17px;font-weight:800}
+  .bop-name{font-size:22px;font-weight:800}
+  .nf{width:300px;border:1.5px solid #000;padding:4px 8px 8px;font-family:Arial,Helvetica,sans-serif;color:#000}
+  .nf h3{margin:0;font-size:26px;font-weight:900;letter-spacing:-.5px;line-height:1}
+  .nf .rule{border-bottom:1px solid #000}
+  .nf .rule.thick{border-bottom-width:8px}
+  .nf .rule.mid{border-bottom-width:4px}
+  .nf .r{display:flex;justify-content:space-between;font-size:12px;line-height:1.5}
+  .nf .r.b{font-weight:800}
+  .nf .ind{padding-left:14px}
+  .nf .ind2{padding-left:26px}
+  .nf .sm{font-size:10px;line-height:1.35}
+  .reg-note{border:1px solid var(--line);background:var(--soft2);border-radius:8px;padding:12px 14px;font-size:11px;line-height:1.55;color:var(--muted2)}
+  .reg-note li{margin:3px 0}
+  /* guideline table */
+  .gtbl{border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:12.5px;max-width:520px}
+  .gtbl .gh{display:grid;grid-template-columns:1fr 150px;background:var(--soft);font-weight:700;color:var(--muted2)}
+  .gtbl .gr{display:grid;grid-template-columns:1fr 150px;border-top:1px solid var(--line)}
+  .gtbl .gc{padding:8px 12px}
+  .gtbl .gc+.gc{border-left:1px solid var(--line)}
+  .pdp-badge{display:inline-flex;gap:8px;align-items:center;font-size:12px;font-weight:700;color:var(--gl);background:var(--gl-bg);border:1px solid var(--gl-line);padding:5px 10px;border-radius:8px;margin-bottom:12px}
+  /* ---------- annotation element wrapper ---------- */
+  .el{position:relative}
+  .el.hl{outline:2px solid var(--orange);outline-offset:3px;background:var(--orange-bg);border-radius:4px}
+  .el.hlg{outline:1.5px dashed var(--gl);outline-offset:3px;border-radius:4px}
+  /* guideline callout tag — inline chip attached under each element (key-line style, collision-free) */
+  .gtag{display:none;margin-top:6px}
+  .showgl .gtag{display:inline-flex;align-items:stretch}
+  .gtag .dash{display:none}
+  .gtag .chip{background:var(--gl-bg);border:1px solid var(--gl-line);border-left:3px solid var(--gl);border-radius:6px;padding:4px 9px;font-family:'Inter',sans-serif;max-width:260px}
+  .gtag .h{font-size:11.5px;font-weight:800;color:var(--gl);line-height:1.15}
+  .gtag .rule{font-size:10px;color:var(--muted);margin-top:1px;line-height:1.25}
+  /* comment add button */
+  .cadd{position:absolute;top:-10px;left:-10px;width:24px;height:24px;border-radius:50%;background:#fff;border:1.5px solid var(--accent);color:var(--accent);font-size:16px;font-weight:700;display:none;align-items:center;justify-content:center;z-index:5;box-shadow:0 2px 6px rgba(20,32,60,.18);line-height:1}
+  .commenting .el:hover>.cadd{display:flex}
+  .commenting .el{cursor:copy}
+  .commenting .el:hover{background:rgba(47,133,237,.06);border-radius:4px}
+  /* comment pin */
+  .pin{position:absolute;top:-11px;left:-11px;width:24px;height:24px;border-radius:50% 50% 50% 2px;background:var(--orange);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;z-index:6;box-shadow:0 2px 6px rgba(0,0,0,.25);border:2px solid #fff}
+  .pin.sel{background:var(--accent)}
+  /* ---------- side panel ---------- */
+  .pv-side{position:sticky;top:78px;align-self:start;height:calc(100vh - 100px);display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 3px rgba(20,32,60,.07);overflow:hidden}
+  .side-h{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  .side-h h3{margin:0;font-size:14px;font-weight:700}
+  .side-h .cnt{font-size:11px;font-weight:700;color:var(--accent);background:#E7EEFB;padding:2px 8px;border-radius:10px}
+  .side-b{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+  .hint{font-size:12.5px;line-height:1.55;color:var(--muted)}
+  .hint b{color:var(--ink)}
+  .cmt{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:7px;background:#fff}
+  .cmt.sel{border-color:var(--accent);box-shadow:0 0 0 2px rgba(47,133,237,.14)}
+  .cmt .top{display:flex;align-items:center;gap:8px}
+  .cmt .no{width:20px;height:20px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .cmt .el-name{font-size:11px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.4px}
+  .cmt .x{margin-left:auto;border:0;background:none;color:var(--muted);font-size:15px;line-height:1}
+  .cmt textarea{width:100%;min-height:54px;resize:vertical;border:1px solid var(--line2);border-radius:7px;padding:7px 9px;font-size:13px;font-family:inherit;color:var(--ink)}
+  .cmt .body{font-size:13px;line-height:1.5;color:var(--ink);white-space:pre-wrap}
+  .cmt .acts{display:flex;justify-content:flex-end;gap:8px}
+  .mini{height:30px;padding:0 12px;border-radius:7px;font-size:12px;font-weight:700;border:1px solid var(--line2);background:#fff;color:var(--ink)}
+  .mini.pri{background:var(--yellow);border-color:var(--yellow)}
+  .empty{font-size:12.5px;color:var(--muted);line-height:1.55;text-align:left}
+  .gl-legend .lg-row{display:flex;gap:10px;font-size:12px;padding:7px 0;border-bottom:1px solid var(--line)}
+  .gl-legend .lg-row:last-child{border-bottom:0}
+  .gl-legend .lg-h{font-weight:800;color:var(--gl);white-space:nowrap}
+  /* download report */
+  .scrim{position:fixed;inset:0;background:rgba(20,24,33,.6);z-index:90;overflow:auto;display:none}
+  .scrim.open{display:block}
+  .report{margin:30px auto;width:min(860px,calc(100% - 40px));background:#fff;border-radius:12px;box-shadow:0 24px 60px rgba(10,14,24,.4);overflow:hidden}
+  .rep-head{display:flex;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid var(--line)}
+  .rep-head h2{margin:0;font-size:17px;font-weight:700}
+  .rep-head .x{margin-left:auto;border:1px solid var(--line2);background:#fff;border-radius:7px;width:30px;height:30px;font-size:15px;color:var(--muted2)}
+  .rep-body{padding:22px;background:#EEF1F6;max-height:72vh;overflow:auto;display:flex;flex-direction:column;gap:16px}
+  .rsheet{background:#fff;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,.12);padding:26px 30px}
+  .rsheet h4{margin:0 0 4px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.4px}
+  .rep-cmt{display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+  .rep-cmt .no{width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .rep-cmt .en{font-size:11px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.4px}
+  .rep-cmt .bd{font-size:13px;line-height:1.5}
+  .accept{display:flex;flex-direction:column;gap:8px;padding:14px 22px;border-top:1px solid var(--line)}
+  .accept label{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:var(--muted2)}
+  .rep-foot{display:flex;justify-content:flex-end;gap:10px;padding:14px 22px;border-top:1px solid var(--line)}
+  @media(max-width:980px){.pv-wrap{grid-template-columns:1fr}.pv-side{position:static;height:auto;max-height:520px}.showgl .gtag{position:static;display:inline-flex;margin-top:6px;left:auto}.showgl .gtag .dash{display:none}}
+</style>
+</head>
+<body>
+<div class="pv-top">
+  <div>
+    <h1 class="pv-title">Label Preview</h1>
+    <div class="pv-sub">Tangy Tomato Makhana · Global Master Label</div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="pv-spacer"></div>
+  <button class="tg gl" id="tgGuide" type="button" aria-pressed="false"><span class="sw"></span>Guidelines</button>
+  <button class="tg" id="tgComment" type="button" aria-pressed="false"><span class="sw"></span>Comment mode</button>
+  <button class="btn-yellow" id="btnDownload" type="button">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></svg>
+    Download
+  </button>
+</div>
+
+<div class="pv-wrap">
+  <div class="pv-canvas" id="canvas"><!-- rendered --></div>
+  <aside class="pv-side" id="side"><!-- rendered --></aside>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="report">
+    <div class="rep-head">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2456C9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+      <h2>Label specification report</h2>
+      <button class="x" id="repClose" type="button" aria-label="Close">×</button>
+    </div>
+    <div class="rep-body" id="repBody"></div>
+    <div class="accept">
+      <label><input type="checkbox" id="ac1" />I accept that I have read the Terms and Conditions and Disclaimers.</label>
+      <label><input type="checkbox" id="ac2" />I accept that I have declared all the information correctly and to the best of my knowledge. I hereby take responsibility for incorporating these in the final label.</label>
+    </div>
+    <div class="rep-foot">
+      <button class="btn-outline" id="repCancel" type="button">Cancel</button>
+      <button class="btn-yellow" id="repDownload" type="button" disabled style="opacity:.5">Download PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  /* ------------------------------------------------------------------ data */
+  var FLAGS = {
+    IN:'<svg class="flag" viewBox="0 0 18 12"><rect width="18" height="4" fill="#FF9933"/><rect y="4" width="18" height="4" fill="#fff"/><rect y="8" width="18" height="4" fill="#138808"/><circle cx="9" cy="6" r="1.4" fill="none" stroke="#000080" stroke-width=".6"/></svg>',
+    US:'<svg class="flag" viewBox="0 0 18 12"><rect width="18" height="12" fill="#fff"/><rect width="18" height="2" fill="#B22234"/><rect y="4" width="18" height="2" fill="#B22234"/><rect y="8" width="18" height="2" fill="#B22234"/><rect width="8" height="6" fill="#3C3B6E"/></svg>',
+    CA:'<svg class="flag" viewBox="0 0 18 12"><rect width="18" height="12" fill="#fff"/><rect width="4.5" height="12" fill="#D52B1E"/><rect x="13.5" width="4.5" height="12" fill="#D52B1E"/><rect x="7.5" y="4" width="3" height="4" fill="#D52B1E"/></svg>'
+  };
+  var COUNTRIES = [{k:'IN',t:'India'},{k:'US',t:'United States'},{k:'CA',t:'Canada'}];
+
+  // guideline callouts per element id, per country  {h: minimum height, rule: basis}
+  var GUIDE = {
+    IN:{
+      netq:{h:'Height per PDP (Legal Metrology Rule 9)', rule:'PDP 100–500 cm² → min 2 mm'},
+      name:{h:'Prominent, clear', rule:'FSSAI Reg 5 – name of food'},
+      ingr:{h:'min 1 mm', rule:'FSSAI Reg 2.2 – general declarations'},
+      alle:{h:'min 1 mm · bold', rule:'FSSAI Reg 2.2.2 – allergen declaration'},
+      nf:{h:'min 1 mm', rule:'FSSAI Reg 2.2 – nutritional information'},
+      addr:{h:'min 1 mm', rule:'Legal Metrology Rule 6 – manufacturer'},
+      coo:{h:'min 1 mm', rule:'FSSAI – country of origin'},
+      veg:{h:'Ø ≥ as prescribed', rule:'FSSAI Reg 2.2.1 – veg/non-veg mark'}
+    },
+    US:{
+      netq:{h:'min 12.7 mm (½")', rule:'FPLA / 21 CFR 101.7 – net quantity'},
+      name:{h:'½ the largest print', rule:'21 CFR 101.3 – statement of identity'},
+      ingr:{h:'min 1.6 mm (1/16")', rule:'21 CFR 101.4 – ingredient list'},
+      alle:{h:'min 1.6 mm', rule:'FALCPA – "Contains" statement'},
+      nf:{h:'Calories 5.64 mm · values 2.12 mm', rule:'21 CFR 101.9(d) – Nutrition Facts'},
+      addr:{h:'min 1.6 mm', rule:'21 CFR 101.5 – firm name & address'},
+      coo:{h:'conspicuous', rule:'19 CFR 134 – country of origin'}
+    },
+    CA:{
+      netq:{h:'min 1.6 mm', rule:'SFCR / Legal Metrology – net quantity'},
+      name:{h:'min 1.6 mm', rule:'FDR B.01.001 – common name'},
+      ingr:{h:'min 1.6 mm', rule:'FDR B.01.008 – list of ingredients'},
+      alle:{h:'min 1.6 mm · bold', rule:'FDR B.01.010.1 – "Contains / Contient"'},
+      nf:{h:'per Table format', rule:'FDR B.01.401 – Nutrition Facts / Valeur nutritive'},
+      addr:{h:'min 1.6 mm', rule:'SFCR – dealer name & address'},
+      coo:{h:'conspicuous', rule:'SFCR – country of origin / pays d’origine'}
+    }
+  };
+
+  var PDP = { IN:'320 sq.cm', US:'14400 sq.cm', CA:'28 sq.cm' };
+  var GTABLE = {
+    IN:[['Net Quantity','min 2 mm (per PDP)'],['Name of food','Prominent'],['Ingredients','min 1 mm'],['Allergen declaration','min 1 mm · bold'],['FBO name & address','min 1 mm'],['Nutritional information','min 1 mm'],['Veg / Non-veg mark','As prescribed']],
+    US:[['Net Quantity','12.7 mm'],['Statement of Identity','1/2 the largest type'],['Ingredients','1.6 mm'],['Allergens','1.6 mm'],['Addresses','1.6 mm'],['"Calories" declaration','5.64 mm'],['Numeric value of calories','7.72 mm'],['"Serving size"','3.53 mm'],['"servings per container"','3.53 mm'],['"Amount per serving"','2.12 mm'],['"% Daily value"','2.12 mm'],['Footnote (2000 kcal)','2.12 mm'],['Macronutrients','2.82 mm'],['Micronutrients','2.82 mm']],
+    CA:[['Net Quantity','1.6 mm'],['Common Name','1.6 mm']]
+  };
+
+  /* ------------------------------------------------------------- app state */
+  var state = { country:'IN', comment:false, guide:false, comments:[], nextNo:1, sel:null };
+
+  var $canvas = document.getElementById('canvas');
+  var $side = document.getElementById('side');
+
+  /* ------------------------------------------------- label artwork per tab */
+  function logo(){ return '<div class="logo">LOGO<br>SAMPLE</div>'; }
+
+  function fopArt(cc){
+    var veg = cc==='IN'
+      ? '<div class="el" data-el="veg" data-name="Veg mark" style="position:absolute;top:18px;left:18px"><span class="cadd">+</span><div class="veg"><i></i></div><div class="gtag"><div class="dash"></div><div class="chip"><div class="h">'+GUIDE.IN.veg.h+'</div><div class="rule">'+GUIDE.IN.veg.rule+'</div></div></div></div>'
+      : '';
+    var name = cc==='CA'
+      ? 'Tangy Tomato Makhana<br><span style="font-size:20px;font-weight:700">Makhana à la tomate piquante</span>'
+      : 'Tangy Tomato Makhana';
+    var net = cc==='US' ? 'Net Wt. 17.64 oz (1 lb 1.64 oz) (500 g)'
+            : cc==='CA' ? 'Net weight: 500 g&nbsp;&nbsp;/&nbsp;&nbsp;Poids net : 500 g'
+            : 'Net Qty: 500 g&nbsp;&nbsp;|&nbsp;&nbsp;5 servings';
+    return ''
+      + '<div class="art" style="position:relative;min-height:360px;display:flex;flex-direction:column;align-items:center;text-align:center">'
+      + veg
+      + '<div style="margin-top:8px">'+logo()+'</div>'
+      + '<div class="el" data-el="name" data-name="Statement of identity" style="margin-top:14px">'
+      +   '<span class="cadd">+</span>'
+      +   '<div class="fop-name">'+name+'</div>'
+      +   '<div class="fop-desc">Roasted foxnuts (makhana) seasoned with tangy tomato</div>'
+      +   gtag(cc,'name')
+      + '</div>'
+      + '<div style="flex:1"></div>'
+      + '<div class="el" data-el="netq" data-name="Net quantity" style="margin-top:28px">'
+      +   '<span class="cadd">+</span><div class="netq">'+net+'</div>'+gtag(cc,'netq')
+      + '</div>'
+      + '</div>';
+  }
+
+  function nfIN(){
+    return '<div class="nf" style="width:280px">'
+      + '<div style="font-size:15px;font-weight:800;border-bottom:4px solid #000;padding-bottom:2px">Nutritional Information</div>'
+      + '<div class="sm" style="margin:3px 0">Per 100 g | Per serve (100 g) | % RDA* per serve</div>'
+      + row2('Energy (kcal)','420','420','21%')
+      + row2('Protein (g)','16','16','29%')
+      + row2('Carbohydrate (g)','60','60','—')
+      + row2('&nbsp;&nbsp;Total Sugars (g)','3','3','—')
+      + row2('&nbsp;&nbsp;Added Sugars (g)','3','3','6%')
+      + row2('Total Fat (g)','13','13','19%')
+      + row2('&nbsp;&nbsp;Saturated Fat (g)','8','8','36%')
+      + row2('&nbsp;&nbsp;Trans Fat (g)','0','0','0%')
+      + row2('Sodium (mg)','890','890','44%')
+      + '<div class="sm" style="margin-top:4px">* % RDA values based on 2000 kcal reference diet.</div>'
+      + '</div>';
+    function row2(n,a,b,c){ return '<div class="r" style="font-size:11px"><span>'+n+'</span><span>'+a+' | '+b+' | '+c+'</span></div>'; }
+  }
+  function nfUS(){
+    return '<div class="nf">'
+      + '<h3>Nutrition Facts</h3>'
+      + '<div class="r" style="font-size:12px">5 servings per container</div>'
+      + '<div class="r b">Serving size<span>1 Cup (100g)</span></div>'
+      + '<div class="rule thick"></div>'
+      + '<div class="r" style="font-size:11px">Amount per serving</div>'
+      + '<div class="r" style="align-items:flex-end"><span style="font-size:22px;font-weight:900">Calories</span><span style="font-size:26px;font-weight:900">420</span></div>'
+      + '<div class="rule mid"></div>'
+      + '<div class="r" style="font-size:10px;justify-content:flex-end">% Daily Value*</div>'
+      + '<div class="rule"></div>'
+      + nr('Total Fat 13g','16%',1)
+      + nr('Saturated Fat 8g','38%',0,1)
+      + nr('Trans Fat 0g','',0,1)
+      + nr('Cholesterol 15mg','5%',1)
+      + nr('Sodium 890mg','39%',1)
+      + nr('Total Carbohydrate 60g','22%',1)
+      + nr('Dietary Fiber 2g','8%',0,1)
+      + nr('Total Sugars 3g','',0,1)
+      + nr('Includes 3g Added Sugars','5%',0,2)
+      + nr('Protein 16g','',1)
+      + '<div class="rule thick"></div>'
+      + nr('Vitamin D 0.4mcg','2%',0) + nr('Calcium 150mg','10%',0)
+      + nr('Iron 0.1mg','0%',0) + nr('Potassium 30mg','0%',0)
+      + '<div class="rule"></div>'
+      + '<div class="sm" style="margin-top:4px">* The % Daily Value (DV) tells you how much a nutrient in a serving of food contributes to a daily diet. 2,000 calories a day is used for general nutrition advice.</div>'
+      + '</div>';
+    function nr(n,v,b,ind){ return '<div class="r '+(b?'b':'')+' '+(ind==1?'ind':ind==2?'ind2':'')+'" style="border-top:1px solid #000"><span>'+n+'</span><span>'+v+'</span></div>'; }
+  }
+  function nfCA(){
+    return '<div class="nf">'
+      + '<h3 style="font-size:20px">Nutrition Facts</h3>'
+      + '<div style="font-size:13px;font-weight:800;border-bottom:1px solid #000">Valeur nutritive</div>'
+      + '<div class="r" style="font-size:11px">Per 100 g / pour 100 g</div>'
+      + '<div class="rule mid"></div>'
+      + '<div class="r b" style="align-items:flex-end"><span>Calories 420</span><span style="font-size:10px;font-weight:800">% Daily Value*<br>% valeur quotidienne*</span></div>'
+      + '<div class="rule"></div>'
+      + cr('Fat / Lipides 13 g','19%',1)
+      + cr('Saturated / saturés 8 g','40%',0,1)
+      + cr('+ Trans / trans 0 g','',0,1)
+      + cr('Carbohydrate / Glucides 60 g','',1)
+      + cr('Fibre / Fibres 2 g','7%',0,1)
+      + cr('Sugars / Sucres 3 g','3%',0,1)
+      + cr('Protein / Protéines 16 g','',1)
+      + cr('Cholesterol / Cholestérol 15 mg','',1)
+      + cr('Sodium 890 mg','39%',1)
+      + '<div class="rule thick"></div>'
+      + '<div class="sm" style="margin-top:4px">*5% or less is a little, 15% or more is a lot / 5% ou moins c’est peu, 15% ou plus c’est beaucoup.</div>'
+      + '</div>';
+    function cr(n,v,b,ind){ return '<div class="r '+(b?'b':'')+' '+(ind?'ind':'')+'" style="border-top:1px solid #000"><span>'+n+'</span><span>'+v+'</span></div>'; }
+  }
+
+  function bopArt(cc){
+    var ingrTitle = cc==='CA' ? 'Ingredients / Ingrédients' : 'Ingredients';
+    var ingrBody = cc==='CA'
+      ? 'DFM Maida, Tomato Seasoning (16.3%), Sugar, Edible Vegetable Oil, Iodised Salt, Yeast Extract.<br><i>Farine DFM, assaisonnement à la tomate (16,3 %), sucre, huile végétale, sel iodé, extrait de levure.</i>'
+      : 'DFM Maida, Tomato Seasoning (16.3%), Sugar, Edible Vegetable Oil, Iodised Salt, Yeast Extract.';
+    var alle = cc==='CA' ? '<b>Contains / Contient:</b> Wheat / Blé' : '<b>Contains:</b> Wheat, Milk';
+    var nf = cc==='US'?nfUS():cc==='CA'?nfCA():nfIN();
+
+    // FBO addresses block per country
+    var fbo;
+    if(cc==='US'){
+      fbo = block('Manufactured by: CONNEDIT BUSINESS SOLUTIONS PVT. LTD., Gate No 6, BIADA Industrial Area, Purnia Sadar, Purnia, Bihar, India')
+          + block('Distributed by: [US Distributor Inc.], [Street, City, State ZIP, USA]');
+    } else if(cc==='CA'){
+      fbo = block('Manufactured by / Fabriqué par: CONNEDIT BUSINESS SOLUTIONS PVT. LTD., Gate No 6, BIADA Industrial Area, Purnia, Bihar, India')
+          + block('Imported by / Importé par: [Canadian Importer Ltd.], [Street, City, Province Postal code, Canada]');
+    } else {
+      fbo = block('Marketed by: CONNEDIT BUSINESS SOLUTIONS PVT. LTD., Gate No 6, BIADA Industrial Area, Purnia Sadar, Purnia, Bihar – [PIN]')
+          + block('Mfd. by: [Co-manufacturer Pvt. Ltd.], [Unit address] · FSSAI Lic. No. [14-digit lic. no.]')
+          + '<div style="font-size:11px;margin-top:3px">[FSSAI logo] Lic. No. [brand owner lic. no.]</div>';
+    }
+    var coo = cc==='CA' ? 'Product of India / Produit de l’Inde' : 'Product of India';
+    var cc_care = cc==='CA'
+      ? 'For feedback / customer complaints, write to: Consumer Care, wecare@farmley.com, +91-9899955931.<br><i>Pour toute rétroaction, écrivez à : wecare@farmley.com</i>'
+      : 'For feedback / customer complaints, write (indicating Batch No. and Mfg. date) to the Consumer Service Manager at wecare@farmley.com · +91-9899955931.';
+    var storage = cc==='CA'
+      ? 'Store in a cool, dry and hygienic place.<br><i>Conserver dans un endroit frais, sec et propre.</i>'
+      : 'Store in a cool, dry and hygienic place. Ready to eat.';
+
+    return '<div class="art" style="display:grid;grid-template-columns:1fr 320px;gap:26px">'
+      + '<div style="display:flex;flex-direction:column;gap:12px">'
+      +   '<div style="display:flex;align-items:center;gap:12px">'+logo()+'<div class="bop-name">Tangy Tomato Makhana</div></div>'
+      +   '<div class="el" data-el="ingr" data-name="Ingredients"><span class="cadd">+</span><div style="font-size:12px;line-height:1.5"><b>'+ingrTitle+':</b> '+ingrBody+'</div>'+gtag(cc,'ingr')+'</div>'
+      +   '<div class="el" data-el="alle" data-name="Allergens"><span class="cadd">+</span><div style="font-size:12px">'+alle+'</div>'+gtag(cc,'alle')+'</div>'
+      +   '<div class="el" data-el="nf" data-name="Nutrition facts"><span class="cadd">+</span>'+nf+gtag(cc,'nf')+'</div>'
+      + '</div>'
+      + '<div style="display:flex;flex-direction:column;gap:10px;font-size:11.5px;line-height:1.5">'
+      +   '<div class="el" data-el="coo" data-name="Country of origin"><span class="cadd">+</span><div style="font-weight:700">'+coo+'</div>'+gtag(cc,'coo')+'</div>'
+      +   '<div class="el" data-el="addr" data-name="FBO address"><span class="cadd">+</span>'+fbo+gtag(cc,'addr')+'</div>'
+      +   '<div style="font-size:11px">'+cc_care+'</div>'
+      +   '<div style="font-size:11px">'+storage+'</div>'
+      + '</div>'
+      + '</div>';
+    function block(t){ return '<div style="margin-bottom:5px">'+t+'</div>'; }
+  }
+
+  function gtag(cc,id){
+    var g = GUIDE[cc] && GUIDE[cc][id];
+    if(!g) return '';
+    return '<div class="gtag"><div class="dash"></div><div class="chip"><div class="h">'+g.h+'</div><div class="rule">'+g.rule+'</div></div></div>';
+  }
+
+  function guidelineInner(cc){
+    var rows = GTABLE[cc].map(function(r){ return '<div class="gr"><div class="gc">'+r[0]+'</div><div class="gc">'+r[1]+'</div></div>'; }).join('');
+    return '<div class="pdp-badge">PDP Area: '+PDP[cc]+'</div>'
+      + '<div class="gtbl"><div class="gh"><div class="gc">Label Elements</div><div class="gc">Minimum ht. of text</div></div>'+rows+'</div>'
+      + '<div class="reg-note" style="margin-top:14px"><ul style="margin:0;padding-left:18px">'
+      +   '<li>This is a regulatory label specification sheet and does not represent the actual label design or layout.</li>'
+      +   '<li>Minimum text heights are derived from the Principal Display Panel (PDP) area; verify against your final artwork size.</li>'
+      +   (cc==='IN'?'<li>Heights follow FSSAI (Labelling &amp; Display) Regulations, 2020 and Legal Metrology (Packaged Commodities) Rules, 2011.</li>':'')
+      + '</ul></div>';
+  }
+  function guidelineSheet(cc){
+    return '<div class="page-label"><span class="bar"></span>GUIDELINES FOR FONT HEIGHTS AS PER PDP &nbsp;'+FLAGS[cc]+'</div>'
+      + '<div class="sheet">'+guidelineInner(cc)+'</div>';
+  }
+
+  /* --------------------------------------------------------------- render */
+  function renderTabs(){
+    document.getElementById('tabs').innerHTML = COUNTRIES.map(function(c){
+      return '<button class="tab'+(state.country===c.k?' on':'')+'" data-cc="'+c.k+'" type="button">'+FLAGS[c.k]+c.k+'</button>';
+    }).join('');
+  }
+
+  function renderCanvas(){
+    var cc = state.country;
+    $canvas.className = 'pv-canvas' + (state.guide?' showgl':'') + (state.comment?' commenting':'');
+    $canvas.innerHTML =
+        '<div class="page-label"><span class="bar"></span>Label Preview — Front of Pack</div>'
+      + '<div class="sheet" data-page="fop">'+fopArt(cc)+'</div>'
+      + '<div class="page-label"><span class="bar"></span>Label Preview — Back of Pack</div>'
+      + '<div class="sheet" data-page="bop">'+bopArt(cc)+'</div>'
+      + guidelineSheet(cc);
+    paintPins();
+  }
+
+  // place pins + apply selection highlight for comments belonging to current country
+  function paintPins(){
+    state.comments.forEach(function(c){
+      if(c.country!==state.country) return;
+      var el = findEl(c.el);
+      if(!el) return;
+      el.classList.add('hl');
+      var pin = document.createElement('div');
+      pin.className = 'pin'+(state.sel===c.id?' sel':'');
+      pin.textContent = c.no; pin.setAttribute('data-pin', c.id);
+      el.appendChild(pin);
+    });
+  }
+  function findEl(elKey){ return $canvas.querySelector('.el[data-el="'+elKey+'"]'); }
+
+  function renderSide(){
+    if(state.comment){
+      var mine = state.comments.filter(function(c){return c.country===state.country;});
+      var list = mine.length ? mine.map(cmtCard).join('') :
+        '<div class="empty">No comments yet.<br><br>Hover a section on the label and click the <b>+</b> to drop a numbered pin, then write a note for your designer.</div>';
+      $side.innerHTML =
+          '<div class="side-h"><h3>Comments</h3><span class="cnt">'+mine.length+'</span>'
+        + '<span style="flex:1"></span><span style="font-size:11px;color:var(--muted)">'+state.country+'</span></div>'
+        + '<div class="side-b" id="cmtList">'+list+'</div>';
+    } else if(state.guide){
+      var g = GUIDE[state.country];
+      var rows = Object.keys(g).map(function(k){
+        var nm = {netq:'Net quantity',name:'Name / identity',ingr:'Ingredients',alle:'Allergens',nf:'Nutrition',addr:'Addresses',coo:'Country of origin',veg:'Veg mark'}[k]||k;
+        return '<div class="lg-row"><span class="lg-h">'+g[k].h+'</span><span><b>'+nm+'</b><br><span style="color:var(--muted)">'+g[k].rule+'</span></span></div>';
+      }).join('');
+      $side.innerHTML =
+          '<div class="side-h"><h3>Guidelines</h3><span class="cnt" style="background:var(--gl-bg);color:var(--gl)">'+state.country+'</span></div>'
+        + '<div class="side-b gl-legend"><div class="hint">Minimum text heights &amp; the rule behind each, shown beside every element on the label. PDP area: <b>'+PDP[state.country]+'</b>.</div>'+rows+'</div>';
+    } else {
+      $side.innerHTML =
+          '<div class="side-h"><h3>Preview</h3></div>'
+        + '<div class="side-b"><div class="hint">'
+        +   'This is a regulatory specification preview — not the final artwork.<br><br>'
+        +   'Turn on <b>Guidelines</b> to see the minimum text height and rule beside each element (key-line style).<br><br>'
+        +   'Turn on <b>Comment mode</b> to annotate: drop numbered pins on any section and leave notes for your designer. They are included in the downloaded report.'
+        + '</div></div>';
+    }
+  }
+  function cmtCard(c){
+    var sel = state.sel===c.id;
+    if(c.draft){
+      return '<div class="cmt sel" data-cid="'+c.id+'">'
+        + '<div class="top"><span class="no">'+c.no+'</span><span class="el-name">'+c.elName+'</span><button class="x" data-del="'+c.id+'" type="button">×</button></div>'
+        + '<textarea data-ta="'+c.id+'" placeholder="e.g. Make the ingredient list bold / heading in pink…">'+esc(c.text)+'</textarea>'
+        + '<div class="acts"><button class="mini" data-del="'+c.id+'" type="button">Cancel</button><button class="mini pri" data-save="'+c.id+'" type="button">Add comment</button></div>'
+        + '</div>';
+    }
+    return '<div class="cmt'+(sel?' sel':'')+'" data-cid="'+c.id+'" data-focus="'+c.id+'">'
+      + '<div class="top"><span class="no">'+c.no+'</span><span class="el-name">'+c.elName+'</span><button class="x" data-del="'+c.id+'" type="button">×</button></div>'
+      + '<div class="body">'+esc(c.text)+'</div>'
+      + '<div class="acts"><button class="mini" data-edit="'+c.id+'" type="button">Edit</button></div>'
+      + '</div>';
+  }
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function rerender(){ renderTabs(); renderCanvas(); renderSide(); }
+
+  /* --------------------------------------------------------- interactions */
+  // country tabs
+  document.getElementById('tabs').addEventListener('click', function(e){
+    var b = e.target.closest('.tab'); if(!b) return;
+    state.country = b.getAttribute('data-cc'); state.sel=null; rerender();
+  });
+  // toggles
+  var tgC = document.getElementById('tgComment'), tgG = document.getElementById('tgGuide');
+  tgC.addEventListener('click', function(){ state.comment=!state.comment; tgC.classList.toggle('on',state.comment); tgC.setAttribute('aria-pressed',state.comment); rerender(); });
+  tgG.addEventListener('click', function(){ state.guide=!state.guide; tgG.classList.toggle('on',state.guide); tgG.setAttribute('aria-pressed',state.guide); rerender(); });
+
+  // canvas clicks: add-comment "+" or select a pin
+  $canvas.addEventListener('click', function(e){
+    var add = e.target.closest('.cadd');
+    if(add && state.comment){
+      e.stopPropagation();
+      var el = add.closest('.el');
+      // one open draft at a time
+      state.comments = state.comments.filter(function(c){return !c.draft;});
+      var id = 'c'+Date.now();
+      state.comments.push({ id:id, no:state.nextNo++, country:state.country, el:el.getAttribute('data-el'), elName:el.getAttribute('data-name'), text:'', draft:true });
+      state.sel = id; renderCanvas(); renderSide();
+      var ta = $side.querySelector('[data-ta="'+id+'"]'); if(ta) ta.focus();
+      return;
+    }
+    var pin = e.target.closest('.pin');
+    if(pin){ state.sel = pin.getAttribute('data-pin'); renderCanvas(); renderSide(); focusCmt(state.sel); }
+  });
+
+  // side panel: save / cancel / delete / edit
+  $side.addEventListener('input', function(e){
+    var ta = e.target.closest('[data-ta]'); if(!ta) return;
+    var c = byId(ta.getAttribute('data-ta')); if(c) c.text = ta.value;
+  });
+  $side.addEventListener('click', function(e){
+    var save=e.target.closest('[data-save]'), del=e.target.closest('[data-del]'), ed=e.target.closest('[data-edit]'), card=e.target.closest('[data-focus]');
+    if(save){ var c=byId(save.getAttribute('data-save')); if(c){ if(!c.text.trim()){ removeC(c.id); } else { c.draft=false; } state.sel=c?c.id:null; renderCanvas(); renderSide(); } return; }
+    if(del){ removeC(del.getAttribute('data-del')); state.sel=null; renderCanvas(); renderSide(); return; }
+    if(ed){ var c2=byId(ed.getAttribute('data-edit')); if(c2){ c2.draft=true; state.sel=c2.id; renderCanvas(); renderSide(); var ta=$side.querySelector('[data-ta="'+c2.id+'"]'); if(ta){ta.focus();} } return; }
+    if(card){ state.sel=card.getAttribute('data-focus'); renderCanvas(); renderSide(); }
+  });
+  function byId(id){ return state.comments.filter(function(c){return c.id===id;})[0]; }
+  function removeC(id){ state.comments = state.comments.filter(function(c){return c.id!==id;}); renumber(); }
+  function renumber(){ state.nextNo=1; state.comments.forEach(function(c){ c.no=state.nextNo++; }); }
+  function focusCmt(id){ var el=$side.querySelector('[data-cid="'+id+'"]'); if(el) el.scrollIntoView({block:'nearest',behavior:'smooth'}); }
+
+  /* ----------------------------------------------------------- download */
+  var scrim=document.getElementById('scrim');
+  function buildReport(){
+    var cc=state.country;
+    var pins = state.comments.filter(function(c){return c.country===cc;});
+    var cmtPage = pins.length
+      ? '<div class="rsheet"><h4>COMMENTS — '+cc+'</h4>'+pins.map(function(c){
+          return '<div class="rep-cmt"><span class="no">'+c.no+'</span><div><div class="en">'+esc(c.elName)+'</div><div class="bd">'+esc(c.text)+'</div></div></div>';
+        }).join('')+'</div>'
+      : '';
+    document.getElementById('repBody').innerHTML =
+        '<div class="rsheet"><h4>FRONT OF PACK — '+cc+'</h4>'+fopArt(cc)+'</div>'
+      + '<div class="rsheet"><h4>BACK OF PACK — '+cc+'</h4>'+bopArt(cc)+'</div>'
+      + '<div class="rsheet"><h4>GUIDELINES FOR FONT HEIGHTS AS PER PDP — '+cc+'</h4>'+guidelineInner(cc)+'</div>'
+      + cmtPage;
+    // strip interactive affordances inside the report
+    document.querySelectorAll('#repBody .cadd').forEach(function(n){n.remove();});
+    document.querySelectorAll('#repBody .el').forEach(function(n){
+      var key=n.getAttribute('data-el');
+      var c=pins.filter(function(x){return x.el===key;})[0];
+      if(c){ var p=document.createElement('div'); p.className='pin'; p.textContent=c.no; p.style.position='absolute'; p.style.top='-11px'; p.style.left='-11px'; n.style.position='relative'; n.appendChild(p); }
+    });
+  }
+  document.getElementById('btnDownload').addEventListener('click', function(){ buildReport(); scrim.classList.add('open'); });
+  document.getElementById('repClose').addEventListener('click', function(){ scrim.classList.remove('open'); });
+  document.getElementById('repCancel').addEventListener('click', function(){ scrim.classList.remove('open'); });
+  scrim.addEventListener('click', function(e){ if(e.target===scrim) scrim.classList.remove('open'); });
+  function syncAccept(){ var ok=document.getElementById('ac1').checked && document.getElementById('ac2').checked; var b=document.getElementById('repDownload'); b.disabled=!ok; b.style.opacity=ok?'1':'.5'; }
+  document.getElementById('ac1').addEventListener('change',syncAccept);
+  document.getElementById('ac2').addEventListener('change',syncAccept);
+  document.getElementById('repDownload').addEventListener('click', function(){ alert('Prototype: this would export a PDF with the pages above and the comments summary.'); });
+
+  rerender();
+})();
+</script>
+</body>
+</html>
